@@ -1,0 +1,206 @@
+\documentclass{article}[12pt]
+%% narrow margin
+% \oddsidemargin 1mm
+% \evensidemargin 1mm
+% \topmargin -30mm
+% \textheight 700pt
+% \textwidth 450pt
+
+\oddsidemargin 2mm
+\evensidemargin 2mm
+\topmargin -15mm
+\textheight 670pt
+\textwidth 470pt
+\oddsidemargin 3mm
+\evensidemargin 3mm
+\topmargin -12mm
+\textheight 700pt
+\textwidth 480pt
+
+%typesetting
+\usepackage{minted}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{bbm}
+\usepackage{float}
+\usepackage{multirow,makeidx,algpseudocode,algorithm}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{setspace}
+\usepackage{adjustbox}
+\usepackage{tabularx}
+\usepackage{subfigure}
+\usepackage{booktabs}
+\usepackage{caption}
+% \usepackage{microtype}
+\usepackage{appendix}
+\usepackage{natbib}
+% \usepackage[utf8]{inputenc} %archaic
+\usepackage{verbatim}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{xcolor}
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  breaklines=true,
+  backgroundcolor=\color{gray!10},
+  frame=single
+}
+
+% \definecolor{codegreen}{rgb}{0,0.6,0}
+% \definecolor{codegray}{rgb}{0.5,0.5,0.5}
+% \definecolor{codepurple}{rgb}{0.58,0,0.82}
+% \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% \lstdefinestyle{mystyle}{
+%     backgroundcolor=\color{backcolour},   
+%     commentstyle=\color{codegreen},
+%     keywordstyle=\color{magenta},
+%     numberstyle=\tiny\color{codegray},
+%     stringstyle=\color{codepurple},
+%     basicstyle=\ttfamily\footnotesize,
+%     breakatwhitespace=false,         
+%     breaklines=true,                 
+%     captionpos=b,                    
+%     keepspaces=true,                 
+%     numbers=left,                    
+%     numbersep=5pt,                  
+%     showspaces=false,                
+%     showstringspaces=false,
+%     showtabs=false,                  
+%     tabsize=2
+% }
+
+% \lstset{style=mystyle}
+
+%math
+\usepackage{mathtools}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,amsbsy,amstext,mathrsfs}
+
+\newcommand{\Fcal}{{\cal F}}
+\newcommand{\R}{\mathbb R}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\N}{\mathbb N}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\1}{\mathbbm{1}}
+\renewcommand{\P}{\mathbb P}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Ecal}{{\cal E}}
+\newcommand{\Acal}{{\cal A}}
+\newcommand{\Mcal}{{\cal M}}
+\newcommand{\Bcal}{{\cal B}}
+\newcommand{\Scal}{{\cal S}}
+\newcommand{\Xcal}{{\cal X}}
+\newcommand{\eps}{\varepsilon}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Poi}{Poi}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Exp}{Exp}
+\DeclareMathOperator{\Bin}{Bin}
+\DeclareMathOperator{\Geom}{Geom}
+\DeclareMathOperator{\Bernoulli}{Bernoulli}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\floor}[1]{\lfloor#1\rfloor}
+\newcommand{\ceil}[1]{\lceil#1\rceil}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\inv}[1]{#1^{-1}}
+\newcommand{\vect}[1]{\boldsymbol{#1}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand{\convdist}[0]{\overset{d}{\longrightarrow}}
+\newcommand{\convprob}[0]{\overset{p}{\longrightarrow}}
+\newcommand{\convas}[0]{\overset{a.s.}{\longrightarrow}}
+
+% % reference
+% \usepackage[round]{natbib}
+% \bibliographystyle{abbrvnat}
+
+\graphicspath{{./figures/}}
+
+
+% Specifier	Meaning
+% h	Try placing the float here (but only if it follows LaTeX’s spacing rules).
+% t	Allow placement at the top of a page.
+% b	Allow placement at the bottom of a page.
+% p	Allow placement on a separate float-only page.
+% H	Force exact placement (requires \usepackage{float}).
+% !	Ignore some float placement restrictions to make placement more likely.
+
+
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    {\LARGE \textbf{STAT538 Final Project} \par}\vspace{1cm}
+    {\large \textbf{Understanding GLMM Fit Metrics: Comparing Binary, Poisson, and Zero-Inflated Models Across Cluster Designs} \par}
+    \vspace{2cm}
+    {\large Yingchi Guo\par}
+    {Student Number: \par}
+    {\large Sijia Li\par}
+    {Student Number: \par}
+    {\large Zhili Jiang\par}
+    {Student Number:33635343 \par}
+    \vspace{2cm}
+    \today \par
+    \vspace{5cm}
+    \begin{abstract}
+    
+\end{abstract}
+    \vfill
+\end{titlepage}
+\newpage
+
+
+\section{Introduction}
+
+\section{Data Description}
+
+\subsection{Binary GLMM}
+
+\subsection{Poisson GLMM}
+
+\subsection{Zero-inflated GLMM}
+
+
+\section{Likelihood}
+
+\section{Raudenbush \& Bryk $R^2$}
+
+\section{Proportional Change in Variance}
+
+
+\section{Nakagawa \& Schielzeth's $R^2$}
+
+\subsection{Marginal $R^2$}
+
+\subsection{Conditional $R^2$}
+
+\section{Conlcusion}
+
+\nocite{*}
+\bibliographystyle{apalike}  
+\bibliography{ref}
+
+
+\clearpage
+\appendix
+\begin{center}
+{\LARGE \textbf{Appendix}}  
+\end{center}
+\renewcommand{\thefigure}{\thesection.\arabic{figure}}
+\renewcommand{\thetable}{\thesection.\arabic{table}}
+\setcounter{figure}{0}  % Reset figure counter
+\setcounter{table}{0}   % Reset table counter
+
+
+\end{document}

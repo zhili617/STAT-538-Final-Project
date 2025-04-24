@@ -441,13 +441,18 @@ P(Y = y) =
 \section{Raudenbush \& Bryk $R^2$}
 
 \section{Proportional Change in Variance}
+Proportional Change in Variance (PCV) quantifies how the variance of random effects changes after introducing additional fixed-effect predictors. It helps assess whether a predictor explains between-group variability (e.g., school-level differences) or within-group variability (e.g., individual differences). The formula is given by:
+
+\begin{align*}
+    \text{PCV} = \frac{\hat{\sigma}^2_{u,\text{null}} - \hat{\sigma}^2_{u,\text{model}}}{\hat{\sigma}^2_{u,\text{null}}}
+\end{align*}
+
+where $\hat{\sigma}^2_{u,\text{null}}$ denotes the variance of the random intercept in the null model, and $\hat{\sigma}^2_{u,\text{model}}$ denotes the variance in the full model that includes additional predictors.
+
 
 
 \section{Nakagawa \& Schielzeth's $R^2$}
 
-\subsection{Marginal $R^2$}
-
-\subsection{Conditional $R^2$}
 
 \begin{table}[ht]
     \centering

@@ -563,7 +563,7 @@ This study offers a comprehensive evaluation of $R^2$ measures in generalized li
 
 Poisson GLMMs consistently achieve higher fit quality across all metrics, with conditional $R^2$ values approaching 1.0 and marginal values exceeding those observed in binary models. In contrast, binary GLMMs exhibit lower fixed-effect explanatory power and greater numerical instability. The PCV results exhibit extremely large negative values in the \texttt{logit\_small} model. Therefore, it is a good choice to use a more stable metric, McFadden, with similar evaluation content to replace PCV.
 
-Cluster size has a small impact in binary models, where smaller clusters yield more concentrated and slightly elevated $R^2$ values. This pattern is attributed to the increased influence of individual-level variation relative to between-cluster differences.
+Cluster size has a small impact in binary models, where smaller clusters yield more concentrated and slightly elevated $R^2$ values. This pattern is attributed to the increased influence of individual-level variation relative to between-cluster differences. The McFadden's $R^2$ changes more significantly with different sizes, especially in Pois GLMMs. $R^2$ become more concentrated and slightly higher, suggesting that McFadden’s $R^2$ is more stable and model fit improves with smaller clusters
 
 Comparison of Raudenbush and Nakagawa measures shows near-identical conditional $R^2$ values, supporting consistency in quantifying combined variance explained by fixed and random effects. However, marginal $R^2$ values from the two frameworks diverge more substantially, particularly under Poisson GLMMs, indicating  Raudenbush is more sensitive to distributional assumptions and variance decomposition approaches.
 

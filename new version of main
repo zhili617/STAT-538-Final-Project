@@ -412,7 +412,7 @@ This analysis conducts 500 simulations to assess the performance of Poisson and 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{plot_dir/box.png}
+    \includegraphics[width=1\textwidth]{plot_dir/box.png}
     \caption{Boxplots of McFadden $R^2$, Nakagawa $R^2$, PCV, and Raudenbush $R^2$ Across Binary and Poisson GLMMs with Varying Cluster Sizes}
     \label{box}
 \end{figure}
@@ -469,7 +469,7 @@ Figure \ref{hist} presents the distribution of 3 fit metrics across four GLMM st
 
 
 
-\begin{table}[ht]
+\begin{table}[H]
 \centering
 \caption{GLMM Model Summary Statistics}
 \label{tab:glmm_r2}
@@ -554,12 +554,11 @@ Future research will explore more complex simulation designs by incorporating gr
 \renewcommand{\thetable}{\thesection.\arabic{table}}
 
 \section{Software}
-R code for simulation method/ result can be found in https://github.com/zhili617/STAT-538-Final-Project
+R code for the simulation method/ result can be found in https://github.com/zhili617/STAT-538-Final-Project
 
 \section{Extra tables}
 
-
-
+Tables below adapted from \citet{nakagawa2013}
 \begin{table}[ht]
     \centering
     \caption{Multiplicative Overdispersion Model}

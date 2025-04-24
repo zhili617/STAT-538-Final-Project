@@ -1,0 +1,430 @@
+---
+title: "STAT538Simulation"
+author: "Yingchi Guo"
+date: "2025-04-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(dplyr, lme4, lmerTest, MASS,extraDistr,pbapply,broom.mixed, performance )
+#set.seed(444)
+set.seed(555)
+```
+
+
+# Simulation
+```{r}
+# simulation function - logistic
+simulateData <- function(ncluster, size, betas, varxw, varxb, tau, type){
+  
+  # predictor
+  pw <- dim(varxw)[1]
+  #pb <- dim(varxb)[1]
+  Xw <- lapply(1:ncluster, function(i) {
+    mvrnorm(size, rep(0, pw), varxw)
+  })
+  #Xb <- mvrnorm(ncluster, rep(0,pb), varxb)
+  Xw_all <- do.call(rbind, Xw) 
+  colnames(Xw_all) <- paste0("Xw_", 1:pw)
+  
+  # random effect
+  #u <- mvrnorm(ncluster, rep(0,(pw+1)), tau)
+  u <- mvrnorm(ncluster, 0, tau)
+  
+  # dataframe
+  cluster_id <- rep(1:ncluster, each = size)
+  subject_id <- 1:(ncluster * size)
+  simdata <- data.frame(
+    subject = subject_id,
+    cluster = cluster_id,
+    Xw_all
+  )
+  #Xb_all <- Xb[rep(1:ncluster, each = size), ]
+  #colnames(Xb_all) <- paste0("Xb_", 1:pb)
+  #simdata <- cbind(simdata, Xb_all)
+  u_0j <- u[rep(1:ncluster, each = size), ]
+  simdata <- cbind(simdata, u_0j)
+  
+  # y
+  if (type == "logistic"){
+    X <- as.matrix(simdata[grep("^X", names(simdata))])
+    eta_fixed <- cbind(1,X) %*% betas
+    eta_rand <- (rep(1,nrow(simdata)) * u_0j)
+    simdata$eta <- as.numeric(eta_fixed + eta_rand)
+    simdata$p <- as.numeric(1 / (1 + exp(-simdata$eta)))
+    simdata$y <- rbinom(n = length(simdata$p), size = 1, prob = simdata$p)
+  }
+  if (type == "poisson"){
+    X <- as.matrix(simdata[grep("^X", names(simdata))])
+    eta_fixed <- cbind(1,X) %*% betas
+    eta_rand <- (rep(1,nrow(simdata)) * u_0j)
+    simdata$eta <- as.numeric(eta_fixed + eta_rand)
+    simdata$lambda <- exp(simdata$eta)
+    simdata$y <- rpois(n = nrow(simdata), lambda = simdata$lambda)
+  }
+
+  
+  # output
+  return(simdata)
+}
+
+
+```
+
+```{r}
+set.seed(555)
+nrep = 300
+
+betas <- c(2,1,1)
+varxw <- diag(c(1,1))
+tau <- diag(1) 
+
+logit_smallsize <- lapply(1:nrep, function(x) {
+  simulateData(
+    ncluster = 100, 
+    size = 5, 
+    betas = betas, 
+    varxw = varxw, 
+    varxb = varxb, 
+    tau = tau,
+    type = "logistic"
+  )
+})
+
+logit_largesize <- lapply(1:nrep, function(x) {
+  simulateData(
+    ncluster = 100, 
+    size = 50, 
+    betas = betas, 
+    varxw = varxw, 
+    varxb = varxb, 
+    tau = tau,
+    type = "logistic"
+  )
+})
+
+pois_smallsize <- lapply(1:nrep, function(x) {
+  simulateData(
+    ncluster = 100, 
+    size = 5, 
+    betas = betas, 
+    varxw = varxw, 
+    varxb = varxb, 
+    tau = tau,
+    type = "poisson"
+  )
+})
+
+pois_largesize <- lapply(1:nrep, function(x) {
+  simulateData(
+    ncluster = 100, 
+    size = 50, 
+    betas = betas, 
+    varxw = varxw, 
+    varxb = varxb, 
+    tau = tau,
+    type = "poisson"
+  )
+})
+
+```
+
+# Fit model
+```{r}
+pboptions(type = "timer") 
+
+fit_logit_smallsize <- pblapply(1:nrep, function(x) {
+  glmer(y ~ Xw_1 + Xw_2 + (1| cluster),
+        family = "binomial",
+        data = logit_smallsize[[x]])
+})
+
+fit_logit_largesize <- pblapply(1:nrep, function(x) {
+  glmer(y ~ Xw_1 + Xw_2  + (1| cluster),
+        family = "binomial",
+        data = logit_largesize[[x]])
+})
+
+fit_pois_smallsize <- pblapply(1:nrep, function(x) {
+  glmer(y ~ Xw_1 + Xw_2 + (1| cluster),
+        family = "poisson",
+        data = pois_smallsize[[x]])
+})
+
+fit_pois_largesize <- pblapply(1:nrep, function(x) {
+  glmer(y ~ Xw_1 + Xw_2  + (1| cluster),
+        family = "poisson",
+        data = pois_largesize[[x]])
+})
+
+fit <- list(fit_logit_smallsize=fit_logit_smallsize,
+            fit_logit_largesize=fit_logit_largesize,
+            fit_pois_smallsize=fit_pois_smallsize,
+            fit_pois_largesize=fit_pois_largesize)
+fit555 <- fit
+save(fit555,file = "nonZI_300rep_seed555_modelfit.RData")
+```
+
+# Analysis
+## [ignore] helper function - get nakagawa r2
+```{r}
+# functionh to get nakagawa r2
+get_nakagawa <- function(model){
+  # extract information from model
+  est_betas <- fixef(model)
+  est_data <- model@frame
+  est_fixpred <- names(est_betas)[names(est_betas) != "(Intercept)"]
+  rand_terms <- findbars(formula(model))
+  est_randpred <- unique(unlist(lapply(rand_terms, function(term) {
+    all.vars(term[[2]])  
+  })))
+  est_cluster <- sapply(rand_terms, function(term) {
+    as.character(term[[3]]) 
+  })
+  est_tau <- as.matrix(bdiag(VarCorr(model)))
+  
+  # calculate variance of x
+  est_var_fixpred <- var(cbind(1, est_data[est_fixpred]))
+  if (is.null(est_randpred)){
+    est_var_randpred <- 0
+  }else{
+    est_var_randpred <- var(cbind(1, est_data[est_randpred]))
+  }
+  
+  # calculate variance for each part
+  var_fix <- t(est_betas) %*% est_var_fixpred %*% est_betas
+  
+  if (is.null(est_randpred)){
+    var_rand_part1 <- 0
+    var_rand_part2 <- est_tau[1,1]
+  }else{
+    var_rand_part1 <- sum(diag(est_tau %*% est_var_randpred))
+    mmat <- colMeans(cbind(1, est_data[, est_randpred]))
+    var_rand_part2 <- t(mmat) %*% est_tau %*% mmat
+  }
+  
+  var_residual <- summary(model)$sigma^2
+  
+  type <- model@resp$family$link
+  if (type == "logit"){
+    var_link <- (pi^2)/3
+  }
+  if (type == "log"){
+    beta0 <- est_betas["(Intercept)"]
+    var_link <- log(1/exp(beta0) + 1)
+  }
+  
+  # total var
+  totalvar <- var_fix + var_rand_part1 + var_rand_part2 + var_residual + var_link
+  marginalR2 <- var_fix/ totalvar
+  conditionalR2 <- (var_fix + var_rand_part1 + var_rand_part2)/totalvar
+  
+  # output
+  output <- list(MarginalR2 = marginalR2, ConditionalR2 = conditionalR2)
+  return(output)
+}
+```
+
+## [ignore] analysis results
+```{r}
+#---------- logit small ----------#
+results_logit_smallsize <- pblapply(fit_logit_smallsize, function(fit) {
+  # convergence
+  conv_status <- if (!is.null(fit@optinfo$conv$lme4$messages)) 1 else 0
+  
+  # mcFadden
+  logLik_full <- as.numeric(logLik(fit))
+  null_model <- try(update(fit, . ~ 1 + (1 | cluster)), silent = TRUE)
+  logLik_null <- as.numeric(logLik(null_model))
+  McFadden_R2 <- 1 - (logLik_full / logLik_null)
+  
+  # nakagawa
+  Nakagawa_Marginal_R2 <- get_nakagawa(fit)$MarginalR2
+  Nakagawa_Conditional_R2 <- get_nakagawa(fit)$ConditionalR2 
+  
+  data.frame(
+    McFaddenR2 = McFadden_R2,
+    Nakagawa_Marginal_R2 = Nakagawa_Marginal_R2,
+    Nakagawa_Conditional_R2 =  Nakagawa_Conditional_R2,
+    non_converge = conv_status
+  )
+})
+results_logit_smallsize <- do.call(rbind, results_logit_smallsize)
+
+#---------- logit large ----------#
+results_logit_largesize <- pblapply(fit_logit_largesize, function(fit) {
+  # convergence
+  conv_status <- if (!is.null(fit@optinfo$conv$lme4$messages)) 1 else 0
+  
+  # mcFadden
+  logLik_full <- as.numeric(logLik(fit))
+  null_model <- try(update(fit, . ~ 1 + (1 | cluster)), silent = TRUE)
+  logLik_null <- as.numeric(logLik(null_model))
+  McFadden_R2 <- 1 - (logLik_full / logLik_null)
+  
+  # nakagawa
+  Nakagawa_Marginal_R2 <- get_nakagawa(fit)$MarginalR2
+  Nakagawa_Conditional_R2 <- get_nakagawa(fit)$ConditionalR2 
+  
+  data.frame(
+    McFaddenR2 = McFadden_R2,
+    Nakagawa_Marginal_R2 = Nakagawa_Marginal_R2,
+    Nakagawa_Conditional_R2 =  Nakagawa_Conditional_R2,
+    non_converge = conv_status
+  )
+})
+results_logit_largesize <- do.call(rbind, results_logit_largesize)
+
+#---------- pois small ----------#
+results_pois_smallsize <- pblapply(fit_pois_smallsize, function(fit) {
+  # convergence
+  conv_status <- if (!is.null(fit@optinfo$conv$lme4$messages)) 1 else 0
+  
+  # mcFadden
+  logLik_full <- as.numeric(logLik(fit))
+  null_model <- try(update(fit, . ~ 1 + (1 | cluster)), silent = TRUE)
+  logLik_null <- as.numeric(logLik(null_model))
+  McFadden_R2 <- 1 - (logLik_full / logLik_null)
+  
+  # nakagawa
+  Nakagawa_Marginal_R2 <- get_nakagawa(fit)$MarginalR2
+  Nakagawa_Conditional_R2 <- get_nakagawa(fit)$ConditionalR2 
+  
+  data.frame(
+    McFaddenR2 = McFadden_R2,
+    Nakagawa_Marginal_R2 = Nakagawa_Marginal_R2,
+    Nakagawa_Conditional_R2 =  Nakagawa_Conditional_R2,
+    non_converge = conv_status
+  )
+})
+results_pois_smallsize <- do.call(rbind, results_pois_smallsize)
+
+#---------- pois large ----------#
+results_pois_largesize <- pblapply(fit_pois_largesize, function(fit) {
+  # convergence
+  conv_status <- if (!is.null(fit@optinfo$conv$lme4$messages)) 1 else 0
+  
+  # mcFadden
+  logLik_full <- as.numeric(logLik(fit))
+  null_model <- try(update(fit, . ~ 1 + (1 | cluster)), silent = TRUE)
+  logLik_null <- as.numeric(logLik(null_model))
+  McFadden_R2 <- 1 - (logLik_full / logLik_null)
+  
+  # nakagawa
+  Nakagawa_Marginal_R2 <- get_nakagawa(fit)$MarginalR2
+  Nakagawa_Conditional_R2 <- get_nakagawa(fit)$ConditionalR2 
+  
+  data.frame(
+    McFaddenR2 = McFadden_R2,
+    Nakagawa_Marginal_R2 = Nakagawa_Marginal_R2,
+    Nakagawa_Conditional_R2 =  Nakagawa_Conditional_R2,
+    non_converge = conv_status
+  )
+})
+results_pois_largesize <- do.call(rbind, results_pois_largesize)
+
+#---------- save -------------#
+results <- list(results_logit_smallsize, results_logit_largesize, results_pois_smallsize, results_pois_largesize)
+save(results, file = "nonZI_200rep_seed444.RData")
+```
+
+## new analysis results using performance
+```{r}
+load("nonZI_200rep_seed444_modelfit.RData")
+load("nonZI_300rep_seed555_modelfit.RData")
+fitmodels <- c(fit, fit555);rm(fit555)
+# ---- helper functions ----
+extract_model_metrics <- function(fit, family) {
+  # convergence
+  conv_status <- if (!is.null(fit@optinfo$conv$lme4$messages)) 1 else 0
+  
+  # McFadden R2
+  logLik_full <- as.numeric(logLik(fit))
+  null_model <- glmer(y ~ 1 + (1 | cluster), data = fit@frame, family = family)
+  logLik_null <- as.numeric(logLik(null_model))
+  McFadden_R2 <- 1 - (logLik_full / logLik_null)
+  
+  # Nakagawa R2
+  nakagawa <- r2_nakagawa(fit)
+  Nakagawa_Marginal_R2 <- nakagawa$R2_marginal
+  Nakagawa_Conditional_R2 <- nakagawa$R2_conditional
+  
+  # Raudenbush R2
+  dat <- fit@frame
+  yhat_con <- predict(fit, type = "response")
+  yhat_mar <- predict(fit, type = "response", re.form = NA)
+  ymean <- mean(dat$y)
+  Raudenbush_Conditional_R2 <- 1 - sum((dat$y - yhat_con)^2) / sum((dat$y - ymean)^2)
+  Raudenbush_Marginal_R2 <- 1 - sum((dat$y - yhat_mar)^2) / sum((dat$y - ymean)^2)
+  
+  # PCV
+  var_full <- try(as.numeric(VarCorr(fit)$cluster), silent = TRUE)
+  var_null <- try(as.numeric(VarCorr(null_model)$cluster), silent = TRUE)
+  PCV <- 1 - (var_full / var_null)
+  
+  # Combine into one row
+  data.frame(
+    McFaddenR2 = McFadden_R2,
+    Nakagawa_Marginal_R2 = Nakagawa_Marginal_R2,
+    Nakagawa_Conditional_R2 = Nakagawa_Conditional_R2,
+    Raudenbush_Marginal_R2 = Raudenbush_Marginal_R2,
+    Raudenbush_Conditional_R2 = Raudenbush_Conditional_R2,
+    PCV = PCV,
+    non_converge = conv_status
+  )
+}
+
+# ---- helper function 2 ----
+run_model_eval <- function(model_list, family) {
+  results <- pblapply(model_list, extract_model_metrics, family = family)
+  do.call(rbind, results)
+}
+
+# ---- analysis results ----
+results_logit_smallsize  <- run_model_eval(fitmodels$fit_logit_smallsize,  family = binomial)
+results_logit_largesize  <- run_model_eval(fitmodels$fit_logit_largesize,  family = binomial)
+results_pois_smallsize   <- run_model_eval(fitmodels$fit_pois_smallsize,   family = poisson)
+results_pois_largesize   <- run_model_eval(fitmodels$fit_pois_largesize,   family = poisson)
+
+# ---- save ----
+results <- list(
+  logit_small  = results_logit_smallsize,
+  logit_large  = results_logit_largesize,
+  pois_small   = results_pois_smallsize,
+  pois_large   = results_pois_largesize
+)
+save(results, file = "R2s.RData")
+```
+
+
+# Population value
+```{r}
+betas <- c(2,1,1)
+varxw <- diag(c(1,1))
+varxb <- diag(c(1,1))
+tau <- diag(2)
+varx <- diag(c(0,1,1))
+
+# fixed slope - random intercept model  
+pop_var_fix <- t(betas) %*% varx %*% betas
+pop_var_rand_part1 <- 0
+pop_var_rand_part2 <- tau[1,1]
+pop_var_residual <- 1
+pop_var_link_logit <- (pi^2)/3
+pop_beta0 <- betas[1]
+pop_var_link_pois <- log(1/exp(pop_beta0) + 1)
+
+# logic
+pop_totalvar_logit <- pop_var_fix + pop_var_rand_part1 + pop_var_rand_part2 + pop_var_residual + pop_var_link_logit
+pop_marginalR2_logit <- pop_var_fix/ pop_totalvar_logit
+pop_conditionalR2_logit <- (pop_var_fix + pop_var_rand_part1 + pop_var_rand_part2)/pop_totalvar_logit
+
+# pois
+pop_totalvar_pois <- pop_var_fix + pop_var_rand_part1 + pop_var_rand_part2 + pop_var_residual + pop_var_link_pois
+pop_marginalR2 <- pop_var_fix/ pop_totalvar_pois
+pop_conditionalR2 <- (pop_var_fix + pop_var_rand_part1 + pop_var_rand_part2)/pop_totalvar_pois
+
+```
+
+

@@ -327,6 +327,93 @@ The structural zero probability $\pi_{ij}$ is modeled using a logstic function
     \text{logit}(\pi_{ij}) = \gamma_0 + \gamma_1 Z_{a1, ij} + \gamma_2 Z_{a2, ij}
 \end{align*}
 
+\begin{table}[ht]
+    \centering
+    \caption{Multiplicative Overdispersion Model}
+    \label{tab:simulated_bf}
+    \begin{threeparttable}
+        \begin{tabular}{@{}p{0.5\linewidth} p{0.5\linewidth}@{}}
+            \toprule
+            \multicolumn{1}{c}{Binomial Data} & \multicolumn{1}{c}{Count Data} \\
+            \midrule
+            a & b \\
+            \begin{minipage}[t]{\linewidth}
+    $Y_{ij} \sim \text{Overdispersed Binomial}(m_{ij}, p_{ij}, \omega)$ \\
+    $\log\left(\frac{p_{ij}}{1 - p_{ij}}\right) = \beta_0 + \alpha_i$ \\
+    $\alpha_i \sim N(0, \sigma^2_{\alpha})$
+            \end{minipage} & 
+            \begin{minipage}[t]{\linewidth}
+    $Y_{ij} \sim \text{Overdispersed Poisson}(\mu_{ij}, \omega)$ \\
+    $\mu_{ij}=exp(\beta_0 + \alpha_i)$ \\
+    $\alpha_i \sim N(0, \sigma^2_{\alpha})$
+            \end{minipage} \\
+            & \\
+            \begin{minipage}[t]{\linewidth}
+                $Y_{ij}$: For the $i^{th}$ individual in the $j^{th}$ group, number of successes in $m_{ij}$ trials. \\
+                For binary data, $m_{ij}=1$. \\
+                $\alpha_i$: Random effect with variance $\sigma_{\alpha}^2$. \\
+                $\omega$: Overdispersion parameter. \\
+            \end{minipage}
+            &
+            \begin{minipage}[t]{\linewidth}
+                $Y_{ij}$: For the $i^{th}$ individual in the $j^{th}$ group, the observed number of counts. \\
+                $\mu_i$: Latent mean for the $i^{th}$ individual in the $j^{th}$ group. \\
+                $\alpha_i$: Random effect with variance $\sigma_{\alpha}^2$. \\
+                $\omega$: Overdispersion parameter. 
+            \end{minipage} \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}
+            \small
+            \item \textit{Note.} Notations can be found in Sections 3.1 and 3.2. NA = do not measure the reliability of any weighted linear composites. 
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+    \caption{Additive Overdispersion Model}
+    \label{tab:simulated_bf}
+    \begin{threeparttable}
+        \begin{tabular}{@{}p{0.5\linewidth} p{0.5\linewidth}@{}}
+            \toprule
+            \multicolumn{1}{c}{Binomial Data} & \multicolumn{1}{c}{Count Data} \\
+            \midrule
+            a & b \\
+            \begin{minipage}[t]{\linewidth}
+    $Y_{ij} \sim \text{Binomial}(m_{ij}, p_{ij})$ \\
+    $\log\left(\frac{p_{ij}}{1 - p_{ij}}\right) = \beta_0 + \alpha_i + e_{ij}$ \\
+    $\alpha_i \sim N(0, \sigma^2_{\alpha})$ \\
+    $e_{ij} \sim N(0, \sigma_{e}^2)$
+            \end{minipage} & 
+            \begin{minipage}[t]{\linewidth}
+    $Y_{ij} \sim \text{Poisson}(\mu_{ij})$ \\
+    $\mu_{ij}=exp(\beta_0 + \alpha_i + e_{ij})$ \\
+    $\alpha_i \sim N(0, \sigma^2_{\alpha})$ \\
+    $e_{ij} \sim N(0, \sigma_{e}^2)$
+            \end{minipage} \\
+            & \\
+            \begin{minipage}[t]{\linewidth}
+                $Y_{ij}$: For the $i^{th}$ individual in the $j^{th}$ group, number of successes in $m_{ij}$ trials. \\
+                For binary data, $m_{ij}=1$. \\
+                $\alpha_i$: Random effect with variance $\sigma_{\alpha}^2$. \\
+                $e_{ij}$: additive overdispersion (residual) term on the link scale, with a variance of $\sigma_e^2$. When $\sigma_e^2=0$, the model reduces to the normal binomial GLMM. 
+            \end{minipage}
+            &
+            \begin{minipage}[t]{\linewidth}
+                $Y_{ij}$: For the $i^{th}$ individual in the $j^{th}$ group, the observed number of counts. \\
+                $\mu_i$: Latent mean for the $i^{th}$ individual in the $j^{th}$ group. \\
+                $\alpha_i$: Random effect with variance $\sigma_{\alpha}^2$. \\
+                $e_{ij}$: additive overdispersion (residual) term on the link scale, with a variance of $\sigma_e^2$. When $\sigma_e^2=0$, the model reduces to the normal Poisson GLMM. 
+            \end{minipage} \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}
+            \small
+            \item \textit{Note.} Notations can be found in Sections 3.1 and 3.2. NA = do not measure the reliability of any weighted linear composites. 
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
 
 
 \subsubsection{Zero-inflated Binary GLMM}
@@ -353,15 +440,6 @@ P(Y = y) =
 \end{cases}
 \]
 
-
-
-\subsection{Binary GLMM}
-
-\subsection{Poisson GLMM}
-
-\subsection{Zero-inflated GLMM}
-
-
 \section{Likelihood}
 
 \section{Raudenbush \& Bryk $R^2$}
@@ -374,6 +452,82 @@ P(Y = y) =
 \subsection{Marginal $R^2$}
 
 \subsection{Conditional $R^2$}
+
+\begin{table}[ht]
+    \centering
+    \caption{Marginal and Conditional R-squared for GLMM: Multiplicative Overdispersion Model}
+    \label{tab:simulated_bf}
+    \begin{threeparttable}
+        \begin{tabular}{@{}p{0.2\linewidth} p{0.5\linewidth} p{0.5\linewidth} @{}}
+            \toprule
+            \multicolumn{1}{c}{Data} & \multicolumn{1}{c}{Marginal $R^2$} & \multicolumn{1}{c}{Conditional $R^2$} \\
+            \midrule
+            & \begin{minipage}[t]{\linewidth}
+    $R^2_{GLMM(m)} = \frac{\sigma^2_f}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \omega \sigma_d^2}$ \\
+    $\sigma_{\epsilon}^2 = \omega \sigma_d^2$
+            \end{minipage} & 
+            \begin{minipage}[t]{\linewidth}
+    $R^2_{GLMM(c)} = \frac{\sigma^2_f + \sum_{l=1}^u \sigma_l^2}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \omega \sigma_d^2}$ \\
+    $\sigma_{\epsilon}^2 = \omega \sigma_d^2$
+            \end{minipage} \\
+            & \\
+             &
+\multicolumn{2}{l}{
+    \begin{minipage}[t]{\linewidth}
+        $\sigma_{f}^2$: Variance explained by the fixed effect components. \\
+        $\sigma_{l}^2$: Variance component of the $j^{th}$ random factor. \\
+        $\sigma_{d}^2$: Distribution-specific variance. \\
+    \end{minipage}
+} \\
+Binomial Data & \multicolumn{2}{l}{$\sigma_d^2 = \pi^2/3$} \\
+Count Data & \multicolumn{2}{l}{$\sigma_d^2 = \ln (1/\text{exp}(\beta_0) + 1)$} \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}
+            \small
+            \item \textit{Note.} Notations can be found in Sections 3.1 and 3.2. NA = do not measure the reliability of any weighted linear composites. 
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+
+\begin{table}[ht]
+    \centering
+    \caption{Marginal and Conditional R-squared for GLMM: Additive Overdispersion Model}
+    \label{tab:simulated_bf}
+    \begin{threeparttable}
+        \begin{tabular}{@{}p{0.2\linewidth} p{0.5\linewidth} p{0.5\linewidth} @{}}
+            \toprule
+            \multicolumn{1}{c}{Data} & \multicolumn{1}{c}{Marginal $R^2$} & \multicolumn{1}{c}{Conditional $R^2$} \\
+            \midrule
+            & \begin{minipage}[t]{\linewidth}
+    $R^2_{GLMM(m)} = \frac{\sigma^2_f}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \sigma_e^2 + \sigma_d^2}$ \\
+    $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$
+            \end{minipage} & 
+            \begin{minipage}[t]{\linewidth}
+    $R^2_{GLMM(c)} = \frac{\sigma^2_f + \sum_{l=1}^u \sigma_l^2}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \sigma_e^2 + \sigma_d^2}$ \\
+    $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$
+            \end{minipage} \\
+            & \\
+             &
+\multicolumn{2}{l}{
+    \begin{minipage}[t]{\linewidth}
+        $\sigma_{f}^2$: Variance explained by the fixed effect components. \\
+        $\sigma_{l}^2$: Variance component of the $j^{th}$ random factor. \\
+        $\sigma_{e}^2$: Variance of additive overdispersion residual term on the link scale. \\
+        $\sigma_{d}^2$: Distribution-specific variance. \\
+    \end{minipage}
+} \\
+Binomial Data & \multicolumn{2}{l}{$\sigma_d^2 = \pi^2/3$} \\
+Count Data & \multicolumn{2}{l}{$\sigma_d^2 = \ln (1/\text{exp}(\beta_0) + 1)$} \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}
+            \small
+            \item \textit{Note.} Notations can be found in Sections 3.1 and 3.2. NA = do not measure the reliability of any weighted linear composites. 
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
 
 \section{Conlcusion}
 

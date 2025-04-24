@@ -281,28 +281,30 @@ Existing $R^2$ measures for GLMM can be obtained through two approaches: the lik
 McFadden's $R^2$ is a likelihood-based “goodness-of-fit” measure for models estimated by maximum likelihood, defined as the proportional improvement of the fitted model’s log-likelihood over a null (intercept-only) model. For a GLMM, it can be written as:
 \begin{align*}
     R_{MF}^2 = \frac{l_{null} - l_{full}}{l_{null}}
-\end{align*} where $l_{\text{full}}$ is the log-likelihood of the fitted GLMM, and $l_{\text{null}}$ is the log-likelihood of the intercept only model. One of the biggest disadvantages of this approach is that for generalized linear mixed models, the likelihood can no longer be compared, if they are fitted by restricted maximum likelihood (REML). To compute McFadden's $R^2$, one has to use maximal likelihood for estimation. However, ML will generate biased variance components (e.g. \citet{pinheiro2000mixed}).
+\end{align*} where $l_{\text{full}}$ is the log-likelihood of the fitted GLMM, and $l_{\text{null}}$ is the log-likelihood of the intercept only model. One of the biggest disadvantages of this approach is that for generalized linear mixed models, the likelihood can no longer be compared if they are fitted by restricted maximum likelihood (REML). To compute McFadden's $R^2$, one has to use maximum likelihood for estimation. However, ML will generate biased variance components (e.g. \citet{pinheiro2000mixed}).
 
 \subsection{Raudenbush \& Bryk's $R^2$}
 
-As defined in LMM, Raudenbush \& Bryk's $R^2$ in Equation~\ref{eq:rb} can be directly extended to GLMM, which measures the proportion of variance. It is one of the earliest proposed $R^2$ measures. Two types of $R_{\text{R \& B}}^2$ are usually considered: the marginal $R^2$ and conditional $R^2$. The marginal $R^2$ measures the proportion of variance in the response variable explained by the fixed effects in the model. In this case, $\hat{y_{ij}}$ is predicted through all fixed components in the full model. The conditional $R^2$ measures the proportion of variance in the response variable explain by the fixed effects and random effects in the model. In this case, $\hat{y_{ij}}$ is predicted through both the fixed components and the random components in the full model. This approach has been critiqued by resulting negative $R^2$ values, when certain variance components increase in the full model than the fixed effect only model, even though the total variance decreases (\citet{snijders1994modeled}).
+As defined in LMM, Raudenbush \& Bryk's $R^2$ in Equation~\ref{eq:rb} can be directly extended to GLMM, which measures the proportion of variance. It is one of the earliest proposed $R^2$ measures. Two types of $R_{\text{R \& B}}^2$ are usually considered: the marginal $R^2$ and conditional $R^2$. The marginal $R^2$ measures the proportion of variance in the response variable explained by the fixed effects in the model. In this case, $\hat{y_{ij}}$ is predicted through all fixed components in the full model. The conditional $R^2$ measures the proportion of variance in the response variable explained by the fixed effects and random effects in the model. In this case, $\hat{y_{ij}}$ is predicted through both the fixed components and the random components in the full model. This approach has been critiqued by resulting negative $R^2$ values, when certain variance components increase in the full model than the fixed effect only model, even though the total variance decreases (\citet{snijders1994modeled}).
+
 
 \subsection{Proportional Change in Variance}
-Proportional Change in Variance (PCV) quantifies how the variance of random effects changes after introducing additional fixed-effect predictors. It helps assess whether a predictor explains between-group variability (e.g., school-level differences) or within-group variability (e.g., individual differences). The formula is given by:
+Based on the explanation from \citet{nakagawa2013}, the definition and equation of Proportional Change in Variance are given. It quantifies how the variance of random effects changes after introducing additional fixed-effect predictors. It helps assess whether a predictor explains between-group variability (e.g., school-level differences) or within-group variability (e.g., individual differences). The formula is given by:
 
 \begin{align*}
     \text{PCV} = \frac{\hat{\sigma}^2_{u,\text{null}} - \hat{\sigma}^2_{u,\text{model}}}{\hat{\sigma}^2_{u,\text{null}}}
 \end{align*}
 
-
 where $\hat{\sigma}^2_{u,\text{null}}$ denotes the variance of the random intercept in the null model, and $\hat{\sigma}^2_{u,\text{model}}$ denotes the variance in the full model that includes additional predictors.
+
+
 
 \subsection{Nakagawa \& Schielzeth's $R^2$}
 
 In GLMM, there is no direct estimate of residual variance $\sigma_e^2$. Since data is modeled through a link function in GLMM (e.g., logit link, probit link, log link, etc.), an alternative way is to consider residual variance as the variance not captured by the link function. \citet{nakagawa2013} proposed that the residual variance can be decomposed into three components: (1) the latent link-scale distribution variance, (2) the overdispersion parameter obtained from the dataset, representing the variance not captured by the distribution-specific variance, and (3) a link-scale residual variance. Two models are employed for calculating these components: a multiplicative overdispersion model and an additive overdispersion model.  In this section, we first define the multiplicative overdispersion model and additive overdispersion model. Second, we define marginal and conditional $R^2$ based on these models, respectively. 
 
 \subsubsection{Multiplicative and Additive Overdispersion Model}
-In a multiplicative model, the overdipersion is modeled through an additional parameter in the distribution of the response variable. A simple GLMM for binomial data can be written as: 
+In a multiplicative model, the overdispersion is modeled through an additional parameter in the distribution of the response variable. A simple GLMM for binomial data can be written as: 
 \begin{align*}
     Y_{ij} \sim \text{Overdispersed Binomial}(m_{ij}, p_{ij}, \omega) \\
     \log\left(\frac{p_{ij}}{1 - p_{ij}}\right) = \beta_0 + \alpha_i \\
@@ -339,7 +341,7 @@ A simple GLMM for count data can be written as:
     \mu_{ij}=exp(\beta_0 + \alpha_i + e_{ij}) \\
     \alpha_i \sim N(0, \sigma^2_{\alpha}) \\
     e_{ij} \sim N(0, \sigma_{e}^2)
-\end{align*}  When $\sigma_e^2=0$, the model reduces to the normal Poisson GLMM. In both cases mentioned above, the model residual variance $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$. Table~\ref{tab:simulated_bf_aom} presents a summary of additive model, for binomial and count data.
+\end{align*}  When $\sigma_e^2=0$, the model reduces to the normal Poisson GLMM. In both cases mentioned above, the model residual variance $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$. Table~\ref{tab:simulated_bf_aom} presents a summary of the additive model for binomial and count data.
 
 \subsubsection{Conditional and Marginal $R^2$}
 
@@ -354,7 +356,7 @@ where $m$ in the parentheses indicates marginal $R^2$, $c$ in the parentheses in
 Based on the additive model, the marginal and conditional $R^2$ are:
 \begin{equation*}
     R^2_{N\&S(m)} = \frac{\sigma^2_f}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \sigma_e^2 + \sigma_d^2}, \quad R^2_{G\&S(c)} = \frac{\sigma^2_f + \sum_{l=1}^u \sigma_l^2}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \sigma_e^2 + \sigma_d^2} 
-\end{equation*} Table~\ref{tab:simulated_bf_multiplicative} and~\ref{tab:simulated_bf_additive} summarizes these formulae and presents specific formulae for binomial and count data.
+\end{equation*} Table~\ref{tab:simulated_bf_multiplicative} and~\ref{tab:simulated_bf_additive} summarize these formulae and present specific formulae for binomial and count data.
 
 \section{Simulation Design: Education Intervention Program}
 
@@ -399,63 +401,6 @@ How many Self-Study Modules do students complete during the course?
     \log(\lambda_{ij}) = \beta_0 + \beta_1 X_{w1,ij} + \beta_2 X_{w2,ij}+ u_{j}
 \end{align*}
 
-\subsection{Zero-inflated GLMM}
-
-We designed a zero-inflated binary data-generating mechanism in which the probability of a structural zero depends on baseline risk and two binary covariates: network quality and student health status. Specifically:
-
-\begin{itemize}
-    \item \textbf{$Z_{a1, ij}$}: continuous network quality for individual $i$ in cluster $j$, using $N(0, 1)$ to simulate.
-
-    \item \textbf{$Z_{a2, ij}$}:  binary indicator of sick status (1 = sick, 0 = health), using $Bin(0.1)$ to simulate.
-    
-    \item The baseline structural zero probability is set to $10\%$ for students with good network access and good health
-
-    \item An additional $20\%$ is added to the structural zero probability for students with poor health status.
-
-    \item A unit decrease in network quality leads to an approximate $15\%$ increase in structural zero probability;
-\end{itemize}
-
-The structural zero probability $\pi_{ij}$ is modeled using a logstic function
-\begin{align*}
-    \text{logit}(\pi_{ij}) = \gamma_0 + \gamma_1 Z_{a1, ij} + \gamma_2 Z_{a2, ij}
-\end{align*}
-
-\subsubsection{Zero-inflated Binary GLMM}
-There are some students who fail the course because they never take the test.
-
-
-\[
-P(Y_{ij} = y) = 
-\begin{cases}
-\pi_{ij} + (1 - \pi_{ij})(1 - p_{ij}), & \text{if } y = 0 \\
-(1 - \pi_{ij}) p_{ij}, & \text{if } y = 1
-\end{cases}
-\]
-
-\subsubsection{Zero-inflated Poisson GLMM}
-
-There are some students who do not complete any module due to sickness and bad internet.
-
-\[
-P(Y = y) = 
-\begin{cases}
-\pi_{ij} + (1 - \pi_{ij})e^{-\lambda_{ij}}, & \text{if } y = 0 \\
-(1 - \pi_{ij}) \dfrac{e^{-\lambda_{ij}} \lambda_{ij}^y}{y!}, & \text{if } y > 0
-\end{cases}
-\]
-
-
-
-
-
-\begin{itemize}
-    \item A unit decrease in network quality leads to an approximate $15\%$ increase in structural zero probability;
-\end{itemize}
-
-The structural zero probability $\pi_{ij}$ is modeled using a logstic function
-\begin{align*}
-    \text{logit}(\pi_{ij}) = \gamma_0 + \gamma_1 Z_{a1, ij} + \gamma_2 Z_{a2, ij}
-\end{align*}
 
 \section{Simultion Result}
 
@@ -591,7 +536,7 @@ Comparison of Raudenbush and Nakagawa measures shows near-identical conditional 
 
 Overall, Nakagawa’s conditional $R^2$ provides a stable and interpretable index for GLMM fit evaluation, especially when fixed and random effects are both of substantive interest. Careful selection of $R^2$ metrics while taking into account model structure, outcome distribution, and cluster design is essential for meaningful interpretation in applied multilevel modeling.
 
-Future research will explore more complex simulation designs by incorporating group-level covariates into the fixed-effect structure and increasing the number of random-effect components. Although the simulation design includes a zero-inflated version, due to time constraints and technical challenges, only the non-zero-inflated results are presented in this study. Zero-inflation is common in real-world educational or biomedical data, and incorporating these features is essential for realistic performance assessment. Therefore, future studies will aim to include and evaluate zero-inflated GLMMs more comprehensively.
+Future research will explore more complex simulation designs by incorporating group-level covariates into the fixed-effect structure and increasing the number of random-effect components. Although the simulation design includes a zero-inflated version on GitHub, due to time constraints and technical challenges, only the non-zero-inflated results are presented in this study. Zero-inflation is common in real-world educational or biomedical data, and incorporating these features is essential for realistic performance assessment. Therefore, future studies will aim to include and evaluate zero-inflated GLMMs more comprehensively.
 
 
 

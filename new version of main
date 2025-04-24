@@ -323,7 +323,7 @@ In an additive model, the overdispersion is modeled through a residual term on t
     \log\left(\frac{p_{ij}}{1 - p_{ij}}\right) = \beta_0 + \alpha_i + e_{ij} \\
     \alpha_i \sim N(0, \sigma^2_{\alpha}) \\
     e_{ij} \sim N(0, \sigma_{e}^2)
-\end{align*}  When $\sigma_e^2=0$, the model reduces to the normal Poisson GLMM. In both cases mentioned above, the model residual variance $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$. Table~\ref{tab:simulated_bf_aom} presents a summary of the additive model for binomial and count data.
+\end{align*} where $e_{ij}$ is the normally distributed residual term on the log scale, and $\sigma_e^2$ is the latent link-scale residual variance. When $\sigma_e^2=0$, the model reduces to the normal binomial GLMM.
 
 A simple GLMM for count data can be written as:
 \begin{align*}
@@ -331,7 +331,7 @@ A simple GLMM for count data can be written as:
     \mu_{ij}=exp(\beta_0 + \alpha_i + e_{ij}) \\
     \alpha_i \sim N(0, \sigma^2_{\alpha}) \\
     e_{ij} \sim N(0, \sigma_{e}^2)
-\end{align*}  When $\sigma_e^2=0$, the model reduces to the normal Poisson GLMM. In both cases mentioned above, the model residual variance $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$. 
+\end{align*}  When $\sigma_e^2=0$, the model reduces to the normal Poisson GLMM. In both cases mentioned above, the model residual variance $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$. Table~\ref{tab:simulated_bf_aom} presents a summary of the additive model for binomial and count data.
 
 \subsection{Conditional and Marginal $R^2$}
 

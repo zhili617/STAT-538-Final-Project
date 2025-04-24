@@ -366,10 +366,6 @@ The structural zero probability $\pi_{ij}$ is modeled using a logstic function
             \end{minipage} \\
             \bottomrule
         \end{tabular}
-        \begin{tablenotes}
-            \small
-            \item \textit{Note.} Notations can be found in Sections 3.1 and 3.2. NA = do not measure the reliability of any weighted linear composites. 
-        \end{tablenotes}
     \end{threeparttable}
 \end{table}
 
@@ -411,10 +407,6 @@ The structural zero probability $\pi_{ij}$ is modeled using a logstic function
             \end{minipage} \\
             \bottomrule
         \end{tabular}
-        \begin{tablenotes}
-            \small
-            \item \textit{Note.} Notations can be found in Sections 3.1 and 3.2. NA = do not measure the reliability of any weighted linear composites. 
-        \end{tablenotes}
     \end{threeparttable}
 \end{table}
 
@@ -486,10 +478,6 @@ Binomial Data & \multicolumn{2}{l}{$\sigma_d^2 = \pi^2/3$} \\
 Count Data & \multicolumn{2}{l}{$\sigma_d^2 = \ln (1/\text{exp}(\beta_0) + 1)$} \\
             \bottomrule
         \end{tabular}
-        \begin{tablenotes}
-            \small
-            \item \textit{Note.} Notations can be found in Sections 3.1 and 3.2. NA = do not measure the reliability of any weighted linear composites. 
-        \end{tablenotes}
     \end{threeparttable}
 \end{table}
 
@@ -525,10 +513,6 @@ Binomial Data & \multicolumn{2}{l}{$\sigma_d^2 = \pi^2/3$} \\
 Count Data & \multicolumn{2}{l}{$\sigma_d^2 = \ln (1/\text{exp}(\beta_0) + 1)$} \\
             \bottomrule
         \end{tabular}
-        \begin{tablenotes}
-            \small
-            \item \textit{Note.} Notations can be found in Sections 3.1 and 3.2. NA = do not measure the reliability of any weighted linear composites. 
-        \end{tablenotes}
     \end{threeparttable}
 \end{table}
 

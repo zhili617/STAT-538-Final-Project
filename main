@@ -186,9 +186,9 @@ h(E(y_{ij})) = \mathbf{X}_{ij} \beta + u_j
 
 Here, the subscript $ij$ denotes the $i$th observation in the $j$th cluster. $\mathbf{X}_{ij}$ represents the predictor matrix (with the first column as 1s for the intercept), and $\beta$ denotes the fixed effects, including both intercept and slope coefficients. The random component, $u_j$, represents the cluster-specific random intercept (i.e., the deviation of the cluster-specific intercept from the overall fixed intercept). This term is also sometimes referred to as the level-2 residual, and it represents a key distinction between generalized linear models (GLMs) and GLMMs.
 
-On the left-hand side, $h(\cdot)$ denotes the link function — a monotonic transformation that connects the expected value of $y_{ij}$ (on its original scale) to the linear predictor on the right-hand side of Equation \@ref(eq:glmm). Commonly used link functions include the logit link for binary outcomes and the log link for count outcomes, among others.
+On the left-hand side, $h(\cdot)$ denotes the link function — a monotonic transformation that connects the expected value of $y_{ij}$ (on its original scale) to the linear predictor on the right-hand side of Equation \ref{eq:glmm}. Commonly used link functions include the logit link for binary outcomes and the log link for count outcomes, among others.
 
-It is important to note that Equation \@ref(eq:glmm) does not explicitly include level-1 residuals. This is because, by definition, distributions in the exponential family have variances that are determined by their means (and, indirectly, by the link function). Therefore, the model is typically expressed with the level-1 residuals omitted, and the expected values appear within the link function. This formulation is essential for understanding the calculation and interpretation of $R^2$ measures in GLMMs (see sections below).
+It is important to note that Equation \ref{eq:glmm} does not explicitly include level-1 residuals. This is because, by definition, distributions in the exponential family have variances that are determined by their means (and, indirectly, by the link function). Therefore, the model is typically expressed with the level-1 residuals omitted, and the expected values appear within the link function. This formulation is essential for understanding the calculation and interpretation of $R^2$ measures in GLMMs (see sections below).
 
 \section{Existing $R^2$ measures for GLM}
 For GLMs, pseudo-$R^2$ measures are the most commonly reported goodness-of-fit metrics in applied research. However, none of these measures can be interpreted in the same way as the $R^2$ in linear regression models with normally distributed outcomes. Among the available options, a deviance-based measure and a likelihood-based measure are the most widely used; thus, we focus on these two here.
@@ -200,7 +200,7 @@ R^2_{Cohen} = \frac{D_{null} - D_{fitted}}{D_{null}}
 \label{eq:cohen}
 \end{equation}
 
-where $D_{null}$ and $D_{fitted}$ denote the deviance of the null model and the user-specified model, respectively. Equation \@ref(eq:cohen) represents the proportion of deviance reduced by the inclusion of predictors.
+where $D_{null}$ and $D_{fitted}$ denote the deviance of the null model and the user-specified model, respectively. Equation \ref{eq:cohen} represents the proportion of deviance reduced by the inclusion of predictors.
 
 The most commonly used likelihood-based measure is McFadden’s pseudo-$R^2$, defined as:
 \begin{equation}
@@ -228,13 +228,13 @@ R^2 = 1 - \frac{\text{residual variance}}{\text{total outcome variance}}
 \label{eq:r2resid}
 \end{equation}
 
-The definition in Equation \@ref(eq:r2) requires estimation of model-implied variances, while the definition in Equation \@ref(eq:r2resid) relies on residual variances.
+The definition in Equation \ref{eq:r2} requires estimation of model-implied variances, while the definition in Equation \ref{eq:r2resid} relies on residual variances.
 
 In LMMs, however, one important consideration is whether level-2 residuals should be treated as part of the residual variance or as part of the model-implied variance. Both approaches are reasonable, which has led to two corresponding types of $R^2$: marginal $R^2$, where level-2 residuals are treated as residual variance, and conditional $R^2$, where level-2 residuals are considered part of the model effect.
 
 \footnote{ For models with random slopes, if the variance attributable to the random slopes is treated as residual, the result is a marginal $R^2$; if it is treated as part of the model structure, the result is a conditional $R^2$.}
 
-@raudenbush2002 proposed a variance-reduction approach for computing $R^2$ in LMMs, based on Equation \@ref(eq:r2resid):
+@raudenbush2002 proposed a variance-reduction approach for computing $R^2$ in LMMs, based on Equation \ref{eq:r2resid}:
 \begin{equation}
 R^2_{\text{R\&B}} = 1 - \frac{\sum_{j=1}^J \sum_{i=1}^{n_j} (y_{ij} - \hat{y}_{ij})^2}
 {\sum_{j=1}^J \sum_{i=1}^{n_j} (y_{ij} - \bar{y}_{ij})^2}
@@ -242,9 +242,9 @@ R^2_{\text{R\&B}} = 1 - \frac{\sum_{j=1}^J \sum_{i=1}^{n_j} (y_{ij} - \hat{y}_{i
 \label{eq:rb}
 \end{equation}
 
-Here, $\bar{y}$ denotes the grand mean of the normally distributed outcome, $J$ is the number of clusters, and $n_j$ is the size of the $j$th cluster. The $\hat{y}_{ij}$ represents the model-predicted value for $y_{ij}$. Depending on whether $\hat{y}_{ij}$ is computed using only the fixed part of the model (i.e., $\mathbf{X}_{ij}\beta$, as in Equation \@ref(eq:glmm)), or both fixed and random parts (i.e., $\mathbf{X}_{ij}\beta + u_j$), the resulting measure corresponds to marginal or conditional $R^2$, respectively.
+Here, $\bar{y}$ denotes the grand mean of the normally distributed outcome, $J$ is the number of clusters, and $n_j$ is the size of the $j$th cluster. The $\hat{y}_{ij}$ represents the model-predicted value for $y_{ij}$. Depending on whether $\hat{y}_{ij}$ is computed using only the fixed part of the model (i.e., $\mathbf{X}_{ij}\beta$, as in Equation \ref{eq:glmm}), or both fixed and random parts (i.e., $\mathbf{X}_{ij}\beta + u_j$), the resulting measure corresponds to marginal or conditional $R^2$, respectively.
 
-Based on the alternative definition of $R^2$ in Equation \@ref(eq:r2), @snijders2011 proposed a total variance decomposition approach:
+Based on the alternative definition of $R^2$ in Equation \ref{eq:r2}, @snijders2011 proposed a total variance decomposition approach:
 \begin{equation}
 R^2_{\text{S\&B}} = 
 \frac{\gamma_X^\prime \Sigma_X \gamma_X}
@@ -253,7 +253,7 @@ R^2_{\text{S\&B}} =
 \label{eq:sb}
 \end{equation}
 
-Here, $\gamma_X$ is analogous to $\beta$ in Equation \@ref(eq:glmm), and $\Sigma_X$ is the covariance matrix of $\mathbf{X}_{ij}$. The term $\tau_{00}$ represents the variance of $u_j$, and $\sigma^2$ denotes the level-1 residual variance. This $R^2_{\text{S\&B}}$ can be interpreted as the proportion of total outcome variance explained by the fixed effects, including both intercept and slopes.
+Here, $\gamma_X$ is analogous to $\beta$ in Equation \ref{eq:glmm}, and $\Sigma_X$ is the covariance matrix of $\mathbf{X}_{ij}$. The term $\tau_{00}$ represents the variance of $u_j$, and $\sigma^2$ denotes the level-1 residual variance. This $R^2_{\text{S\&B}}$ can be interpreted as the proportion of total outcome variance explained by the fixed effects, including both intercept and slopes.
 
 Similarly, @nakagawa2013 proposed conditional and marginal $R^2$ measures based on the same decomposition logic:
 \begin{equation}
@@ -521,6 +521,8 @@ Count Data & \multicolumn{2}{l}{$\sigma_d^2 = \ln (1/\text{exp}(\beta_0) + 1)$} 
         \end{tabular}
     \end{threeparttable}
 \end{table}
+
+\section{Simultion Result}
 
 \section{Conlcusion}
 

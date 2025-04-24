@@ -1,0 +1,229 @@
+---
+title: "STAT 538 simuation with zero-finlation"
+output: html_document
+date: "2025-04-24"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(dplyr, lme4, lmerTest, MASS,extraDistr,pbapply,broom.mixed)
+library(glmmTMB)
+```
+
+# binary/Poiss GLMM with zero-inflation
+```{r}
+
+data_zip_zib <- function(ncluster, size, betas, gammas, varxw, varxb, tau, family = "binomial") {
+  
+  pw <- dim(varxw)[1]
+  pb <- dim(varxb)[1]
+  
+  # cluster-level Xb and random effect
+  Xb <- mvrnorm(ncluster, rep(0, pb), varxb)
+  u <- mvrnorm(ncluster, rep(0, pw + 1), tau)
+  
+  # student-level Xw and cluster ID
+  Xw <- lapply(1:ncluster, function(i) mvrnorm(size, rep(0, pw), varxw))
+  Xw_all <- do.call(rbind, Xw)
+  colnames(Xw_all) <- paste0("Xw_", 1:pw)
+  
+  cluster_id <- rep(1:ncluster, each = size)
+  subject_id <- 1:(ncluster * size)
+  Xb_all <- Xb[rep(1:ncluster, each = size), ]
+  colnames(Xb_all) <- paste0("Xb_", 1:pb)
+  
+  # structural zero covariates Z:
+  Z_a1 <- rnorm(ncluster * size)  # Z_{a1, ij}
+  Z_a2 <- rbinom(ncluster * size, size = 1, prob = 0.1)  # Z_{a2, ij}
+  
+  # design matrix
+  X <- as.matrix(cbind(Xw_all, Xb_all))
+  eta_fixed <- cbind(1, X) %*% betas
+  u_all <- u[rep(1:ncluster, each = size), ]
+  eta_rand <- rowSums(cbind(1, Xw_all) * u_all)
+  eta <- eta_fixed + eta_rand
+  
+  # structural zero probability
+  Z <- cbind(1, Z_a1, Z_a2)
+  pi_logit <- Z %*% gammas
+  pi <- 1 / (1 + exp(-pi_logit))
+  structural_zero <- rbinom(n = length(pi), size = 1, prob = pi)
+  
+  
+  if (family == "binomial") {
+    p <- 1 / (1 + exp(-eta))
+    y_obs <- rbinom(n = length(p), size = 1, prob = p)
+    y <- ifelse(structural_zero == 1, 0, y_obs)
+  } else if (family == "poisson") {
+    lambda <- exp(eta)
+    y_obs <- rpois(n = length(lambda), lambda = lambda)
+    y <- ifelse(structural_zero == 1, 0, y_obs)
+  } else {
+    stop("Only binomial or poisson families are supported.")
+  }
+  
+  simdata <- data.frame(
+    subject = subject_id,
+    cluster = cluster_id,
+    Xw_all,
+    Xb_all,
+    Z_a1 = Z_a1,
+    Z_a2 = Z_a2,
+    pi = pi,
+    eta = eta,
+    y = y
+  )
+  
+  return(simdata)
+}
+
+
+
+```
+
+
+
+
+# Compute gamma from pi setting
+```{r}
+compute_gamma_from_pi <- function(baseline_pi,
+                                   sick_pi,
+                                   netdrop_pi) {
+  logit <- function(p) log(p / (1 - p))
+  
+  gamma0 <- logit(baseline_pi)                        # baseline
+  gamma2 <- logit(sick_pi) - gamma0                   # sick effect 
+  gamma1 <- logit(netdrop_pi) - gamma0                # network 
+
+  gamma <- c(gamma0, gamma1, gamma2)
+  names(gamma) <- c("gamma0 (intercept)", "gamma1 (Z_a1)", "gamma2 (Z_a2)")
+  return(gamma)
+}
+
+
+gammas <- compute_gamma_from_pi(0.10, 0.30, 0.25)
+```
+
+
+
+
+# simulation
+
+```{r}
+set.seed(538)
+nrep = 500
+
+betas <- c(2,1,1,2,2)
+varxw <- diag(c(1,1))
+varxb <- diag(c(1,1))
+tau <- diag(c(2,0,0)) 
+
+
+zib_logit_smallsize <- lapply(1:nrep, function(x) {
+  data_zip_zib(
+    ncluster = 100,
+    size = 5,
+    betas = betas,
+    gammas = gammas,
+    varxw = varxw,
+    varxb = varxb,
+    tau = tau,
+    family = "binomial"
+  )
+})
+
+
+
+zib_logit_largesize <- lapply(1:nrep, function(x) {
+  data_zip_zib(
+    ncluster = 100,
+    size = 50,
+    betas = betas,
+    gammas = gammas,
+    varxw = varxw,
+    varxb = varxb,
+    tau = tau,
+    family = "binomial"
+  )
+})
+
+
+zip_pois_smallsize <- lapply(1:nrep, function(x) {
+  data_zip_zib(
+    ncluster = 100,
+    size = 5,
+    betas = betas,
+    gammas = gammas,
+    varxw = varxw,
+    varxb = varxb,
+    tau = tau,
+    family = "poisson"
+  )
+})
+
+
+
+
+zip_pois_largesize <- lapply(1:nrep, function(x) {
+  data_zip_zib(
+    ncluster = 100,
+    size = 50,
+    betas = betas,
+    gammas = gammas,
+    varxw = varxw,
+    varxb = varxb,
+    tau = tau,
+    family = "poisson"
+  )
+})
+
+
+
+
+```
+
+
+
+# Fit model
+```{r}
+pboptions(type = "timer") 
+
+fit_logit_smallsize <- pblapply(1:nrep, function(x) {
+  glmmTMB(y ~ Xw_1 + Xw_2  + (1| cluster),
+        family = "binomial",
+        ziformula = ~ Z_a1 + Z_a2,
+        data = zib_logit_smallsize[[x]])
+})
+
+fit_logit_largesize <- pblapply(1:nrep, function(x) {
+  glmmTMB(y ~ Xw_1 + Xw_2 + (1| cluster),
+        family = "binomial",
+        ziformula = ~ Z_a1 + Z_a2,
+        data = zib_logit_largesize[[x]])
+})
+
+fit_pois_smallsize <- pblapply(1:nrep, function(x) {
+  glmmTMB(y ~ Xw_1 + Xw_2  + (1| cluster),
+        family = "poisson",
+        ziformula = ~ Z_a1 + Z_a2,
+        data = zip_pois_smallsize[[x]])
+})
+
+fit_pois_largesize <- pblapply(1:nrep, function(x) {
+  glmmTMB(y ~ Xw_1 + Xw_2  + (1| cluster),
+        family = "poisson",
+        ziformula = ~ Z_a1 + Z_a2,
+        data = zip_pois_largesize[[x]])
+})
+```
+
+
+
+
+
+
+
+
+
+
+

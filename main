@@ -35,6 +35,9 @@
 \usepackage{subfigure}
 \usepackage{booktabs}
 \usepackage{caption}
+\usepackage{pdflscape}
+\usepackage{rotating} 
+\usepackage{booktabs}
 % \usepackage{microtype}
 \usepackage{appendix}
 \usepackage{natbib}
@@ -267,6 +270,134 @@ R^2_{\text{Nakagawa}} =
 In this formulation, $\sigma_f^2$ represents the variance explained by the fixed effects, $\sigma_l^2$ represents the variance explained by the random effects, and $\sigma_{\epsilon}^2$ is the level-1 residual variance. This metric is interpreted as the proportion of total outcome variance explained jointly by both fixed and random effects. We will focus on this measure and discuss how it can be extended to the GLMM in subsequent sections.
 
 
+
+
+
+\section{Generalized Linear Mixed Model}
+
+\subsection{Binary Data}
+Did the intervention course increase the probability of students passing the final assessment (0/1)?
+
+\textbf{Corresponding Variable}: Whether the course is passed (\texttt{y = 1} passed, \texttt{y = 0} failed)
+\begin{align*}
+    \text{logit}(p_{ij}) = \beta_0 + \beta_1 X_{w1,ij} + \beta_2 X_{w2,ij}  + u_{j}
+\end{align*}
+
+where $i$ refers to the ith student and $j$ refers to the jth school.
+
+\subsection{Count Data}
+How many Self-Study Modules do students complete during the course?
+
+\textbf{Corresponding Variable}: The number of completed Modules.
+
+\begin{align*}
+    \log(\lambda_{ij}) = \beta_0 + \beta_1 X_{w1,ij} + \beta_2 X_{w2,ij}+ u_{j}
+\end{align*}
+
+\section{Zero-inflated Generalized Linear Mixed Model}
+
+We designed a zero-inflated binary data-generating mechanism in which the probability of a structural zero depends on baseline risk and two binary covariates: network quality and student health status. Specifically:
+
+\begin{itemize}
+    \item \textbf{$Z_{a1, ij}$}: continuous network quality for individual $i$ in cluster $j$, using $N(0, 1)$ to simulate.
+
+    \item \textbf{$Z_{a2, ij}$}:  binary indicator of sick status (1 = sick, 0 = health), using $Bin(0.1)$ to simulate.
+    
+    \item The baseline structural zero probability is set to $10\%$ for students with good network access and good health
+
+    \item An additional $20\%$ is added to the structural zero probability for students with poor health status.
+
+    \item A unit decrease in network quality leads to an approximate $15\%$ increase in structural zero probability;
+\end{itemize}
+
+The structural zero probability $\pi_{ij}$ is modeled using a logstic function
+\begin{align*}
+    \text{logit}(\pi_{ij}) = \gamma_0 + \gamma_1 Z_{a1, ij} + \gamma_2 Z_{a2, ij}
+\end{align*}
+
+
+\subsection{Zero-inflated Binary Data}
+There are some students who fail the course because they never take the test.
+
+
+\[
+P(Y_{ij} = y) = 
+\begin{cases}
+\pi_{ij} + (1 - \pi_{ij})(1 - p_{ij}), & \text{if } y = 0 \\
+(1 - \pi_{ij}) p_{ij}, & \text{if } y = 1
+\end{cases}
+\]
+
+\subsection{Zero-inflated Count Data}
+
+There are some students who do not complete any module due to sickness and bad internet.
+
+\[
+P(Y = y) = 
+\begin{cases}
+\pi_{ij} + (1 - \pi_{ij})e^{-\lambda_{ij}}, & \text{if } y = 0 \\
+(1 - \pi_{ij}) \dfrac{e^{-\lambda_{ij}} \lambda_{ij}^y}{y!}, & \text{if } y > 0
+\end{cases}
+\]
+
+\section{Likelihood-based $R^2$ Measures for GLMM}
+
+\subsection{Raudenbush \& Bryk $R^2$}
+
+\subsection{Proportional Change in Variance}
+Proportional Change in Variance (PCV) quantifies how the variance of random effects changes after introducing additional fixed-effect predictors. It helps assess whether a predictor explains between-group variability (e.g., school-level differences) or within-group variability (e.g., individual differences). The formula is given by:
+
+\begin{align*}
+    \text{PCV} = \frac{\hat{\sigma}^2_{u,\text{null}} - \hat{\sigma}^2_{u,\text{model}}}{\hat{\sigma}^2_{u,\text{null}}}
+\end{align*}
+
+where $\hat{\sigma}^2_{u,\text{null}}$ denotes the variance of the random intercept in the null model, and $\hat{\sigma}^2_{u,\text{model}}$ denotes the variance in the full model that includes additional predictors.
+
+
+
+\section{Nakagawa \& Schielzeth's $R^2$}
+
+In GLMM, there is no direct estimate of residual variance $\sigma_e^2$. Since data is modeled through a link function in GLMM (e.g., logit link, probit link, log link, etc.), an alternative way is to consider residual variance as the variance not captured by the link function. \citet{nakagawa2013} proposed that the residual variance can be decomposed into three components: (1) the latent link-scale distribution variance, (2) the overdispersion parameter obtained from the dataset, representing the variance not captured by the distribution-specific variance, and (3) a link-scale residual variance. Two models are employed for calculating these components: a multiplicative overdispersion model and an additive overdispersion model.  In this section, we first define the multiplicative overdispersion model and additive overdispersion model. Second, we define marginal and conditional $R^2$ based on these models, respectively. 
+
+\subsection{Muplicative and Additive Overdispersion Model}
+In a multiplicative model, the overdipersion is modeled through an additional parameter in the distribution of the response variable. A simple GLMM for binomial data can be written as: 
+\begin{align*}
+    Y_{ij} \sim \text{Overdispersed Binomial}(m_{ij}, p_{ij}, \omega) \\
+    \log\left(\frac{p_{ij}}{1 - p_{ij}}\right) = \beta_0 + \alpha_i \\
+    \alpha_i \sim N(0, \sigma^2_{\alpha})
+\end{align*}
+where $Y_{ij}$ is the number of success, $m_{ij}$ is the number of trials, $p_{ij}$ is the probability of success, for the $i^{th}$ individual in the $j^{th}$ group, $\omega$ is the overdispersion parameter, $\sigma_{\alpha}^2$ is the between-person variance, $\alpha_i$ is the normally distributed between-person random effect. For binary data $m_{ij}=1$. When $\omega=1$, there is no overdispersion in the data, and $Y_{ij}$ follows a normal binomial distribution. 
+
+A simple GLMM for count data can be written as:
+\begin{align*}
+    Y_{ij} \sim \text{Overdispersed Poisson}(\mu_{ij}, \omega) \\
+    \mu_{ij}=exp(\beta_0 + \alpha_i) \\
+    \alpha_i \sim N(0, \sigma^2_{\alpha})
+\end{align*} where $\mu_{ij}$ is the mean of the Poisson distribution for the $i^{th}$ individual in the $j^{th}$ group. When $\omega=1$, there is no overdispersion in the data, and $Y_{ij}$ follows a normal Poisson distribution.
+
+In both cases mentioned above, $\sigma_{\epsilon}^2 = \omega \sigma_{d}^2$, where $\sigma_d^2$ is the variance of the link-scale distribution. For binomial data, $\sigma_d^2$ is the variance of the logistic distribution, let $d_l \sim \text{Logistic}(0,1)$, that is:
+\begin{align*}
+    \sigma_d^2 = E[d_l^2] - (E[d_l])^2 = \int_{-\infty}^{\infty} d_l^2 \cdot \frac{e^{-d_l}}{(1 + e^{-d_l})^2} \, dx  - 0 = \frac{\pi^2}{3}
+\end{align*} For Poisson data, $\sigma_d^2$ is the variance of the variance of the Poisson distribution, that is: $\sigma_d^2 = ln(1/e^{\beta_0} + 1)$.  
+
+In an additive model, the overdispersion is modeled through a residual term on the latent link scale (\citet{browne2005variance}). A simple GLMM for binomial data can be written as:
+\begin{align*}
+    Y_{ij} \sim \text{Binomial}(m_{ij}, p_{ij}) \\
+    \log\left(\frac{p_{ij}}{1 - p_{ij}}\right) = \beta_0 + \alpha_i + e_{ij} \\
+    \alpha_i \sim N(0, \sigma^2_{\alpha}) \\
+    e_{ij} \sim N(0, \sigma_{e}^2)
+\end{align*} where $e_{ij}$ is the normally distributed residual term on the log scale, and $\sigma_e^2$ is the latent link-scale residual variance. When $\sigma_e^2=0$, the model reduces to the normal binomial GLMM. 
+
+A simple GLMM for count data can be written as:
+\begin{align*}
+    Y_{ij} \sim \text{Poisson}(\mu_{ij}) \\
+    \mu_{ij}=exp(\beta_0 + \alpha_i + e_{ij}) \\
+    \alpha_i \sim N(0, \sigma^2_{\alpha}) \\
+    e_{ij} \sim N(0, \sigma_{e}^2)
+\end{align*}  When $\sigma_e^2=0$, the model reduces to the normal Poisson GLMM. In both cases mentioned above, the model residual variance $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$. 
+
+\subsection{Conditional and Marginal $R^2$}
+
 \section{Simulation Design: Education Intervention Program}
 
 
@@ -290,39 +421,169 @@ u_j \sim \mathcal{N}(0, \tau^2)
 
 Under this hierarchical framework, the simulation investigates four outcome types using generalized linear mixed models (GLMMs) and their zero-inflated extensions. Each outcome corresponds to a distinct research question.
 
+\section{Simulation Result}
 
-\subsection{Binary GLMM}
-Did the intervention course increase the probability of students passing the final assessment (0/1)?
+\section{Conlcusion}
 
-\textbf{Corresponding Variable}: Whether the course is passed (\texttt{y = 1} passed, \texttt{y = 0} failed)
-\begin{align*}
-    \text{logit}(p_{ij}) = \beta_0 + \beta_1 X_{w1,ij} + \beta_2 X_{w2,ij}  + u_{j}
-\end{align*}
+\nocite{*}
+\bibliographystyle{apalike}  
+\bibliography{ref}
 
-where $i$ refers to the ith student and $j$ refers to the jth school.
 
-\subsection{Poisson GLMM}
-How many Self-Study Modules do students complete during the course?
+\clearpage
+\appendix
+\begin{center}
+{\LARGE \textbf{Appendix}}  
+\end{center}
+\renewcommand{\thefigure}{\thesection.\arabic{figure}}
+\renewcommand{\thetable}{\thesection.\arabic{table}}
 
-\textbf{Corresponding Variable}: The number of completed Modules.
+\newpage
+\begin{table}[ht]
+    \centering
+    \caption{Multiplicative Overdispersion Model}
+    \label{tab:simulated_bf}
+    \begin{threeparttable}
+        \begin{tabular}{@{}p{0.5\linewidth} p{0.5\linewidth}@{}}
+            \toprule
+            \multicolumn{1}{c}{Binomial Data} & \multicolumn{1}{c}{Count Data} \\
+            \midrule
+            a & b \\
+            \begin{minipage}[t]{\linewidth}
+    $Y_{ij} \sim \text{Overdispersed Binomial}(m_{ij}, p_{ij}, \omega)$ \\
+    $\log\left(\frac{p_{ij}}{1 - p_{ij}}\right) = \beta_0 + \alpha_i$ \\
+    $\alpha_i \sim N(0, \sigma^2_{\alpha})$
+            \end{minipage} & 
+            \begin{minipage}[t]{\linewidth}
+    $Y_{ij} \sim \text{Overdispersed Poisson}(\mu_{ij}, \omega)$ \\
+    $\mu_{ij}=exp(\beta_0 + \alpha_i)$ \\
+    $\alpha_i \sim N(0, \sigma^2_{\alpha})$
+            \end{minipage} \\
+            & \\
+            \begin{minipage}[t]{\linewidth}
+                $Y_{ij}$: For the $i^{th}$ individual in the $j^{th}$ group, number of successes in $m_{ij}$ trials. \\
+                For binary data, $m_{ij}=1$. \\
+                $\alpha_i$: Random effect with variance $\sigma_{\alpha}^2$. \\
+                $\omega$: Overdispersion parameter. \\
+            \end{minipage}
+            &
+            \begin{minipage}[t]{\linewidth}
+                $Y_{ij}$: For the $i^{th}$ individual in the $j^{th}$ group, the observed number of counts. \\
+                $\mu_i$: Latent mean for the $i^{th}$ individual in the $j^{th}$ group. \\
+                $\alpha_i$: Random effect with variance $\sigma_{\alpha}^2$. \\
+                $\omega$: Overdispersion parameter. 
+            \end{minipage} \\
+            \bottomrule
+        \end{tabular}
+    \end{threeparttable}
+\end{table}
 
-\begin{align*}
-    \log(\lambda_{ij}) = \beta_0 + \beta_1 X_{w1,ij} + \beta_2 X_{w2,ij}+ u_{j}
-\end{align*}
+\begin{table}[ht]
+    \centering
+    \caption{Additive Overdispersion Model}
+    \label{tab:simulated_bf}
+    \begin{threeparttable}
+        \begin{tabular}{@{}p{0.5\linewidth} p{0.5\linewidth}@{}}
+            \toprule
+            \multicolumn{1}{c}{Binomial Data} & \multicolumn{1}{c}{Count Data} \\
+            \midrule
+            a & b \\
+            \begin{minipage}[t]{\linewidth}
+    $Y_{ij} \sim \text{Binomial}(m_{ij}, p_{ij})$ \\
+    $\log\left(\frac{p_{ij}}{1 - p_{ij}}\right) = \beta_0 + \alpha_i + e_{ij}$ \\
+    $\alpha_i \sim N(0, \sigma^2_{\alpha})$ \\
+    $e_{ij} \sim N(0, \sigma_{e}^2)$
+            \end{minipage} & 
+            \begin{minipage}[t]{\linewidth}
+    $Y_{ij} \sim \text{Poisson}(\mu_{ij})$ \\
+    $\mu_{ij}=exp(\beta_0 + \alpha_i + e_{ij})$ \\
+    $\alpha_i \sim N(0, \sigma^2_{\alpha})$ \\
+    $e_{ij} \sim N(0, \sigma_{e}^2)$
+            \end{minipage} \\
+            & \\
+            \begin{minipage}[t]{\linewidth}
+                $Y_{ij}$: For the $i^{th}$ individual in the $j^{th}$ group, number of successes in $m_{ij}$ trials. \\
+                For binary data, $m_{ij}=1$. \\
+                $\alpha_i$: Random effect with variance $\sigma_{\alpha}^2$. \\
+                $e_{ij}$: additive overdispersion (residual) term on the link scale, with a variance of $\sigma_e^2$. When $\sigma_e^2=0$, the model reduces to the normal binomial GLMM. 
+            \end{minipage}
+            &
+            \begin{minipage}[t]{\linewidth}
+                $Y_{ij}$: For the $i^{th}$ individual in the $j^{th}$ group, the observed number of counts. \\
+                $\mu_i$: Latent mean for the $i^{th}$ individual in the $j^{th}$ group. \\
+                $\alpha_i$: Random effect with variance $\sigma_{\alpha}^2$. \\
+                $e_{ij}$: additive overdispersion (residual) term on the link scale, with a variance of $\sigma_e^2$. When $\sigma_e^2=0$, the model reduces to the normal Poisson GLMM. 
+            \end{minipage} \\
+            \bottomrule
+        \end{tabular}
+    \end{threeparttable}
+\end{table}
 
-\subsection{Zero-inflated GLMM}
 
-We designed a zero-inflated binary data-generating mechanism in which the probability of a structural zero depends on baseline risk and two binary covariates: network quality and student health status. Specifically:
+\begin{sidewaystable}
+    \centering
+    \caption{Marginal and Conditional R-squared for GLMM: Multiplicative Overdispersion Model}
+    \label{tab:simulated_bf_multiplicative}
+    \begin{threeparttable}
+        \begin{tabular}{@{}p{0.15\linewidth} p{0.4\linewidth} p{0.4\linewidth}@{}}
+            \toprule
+            \multicolumn{1}{c}{Data} & \multicolumn{1}{c}{Marginal $R^2$} & \multicolumn{1}{c}{Conditional $R^2$} \\
+            \midrule
+            & $R^2_{GLMM(m)} = \frac{\sigma^2_f}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \omega \sigma_d^2}$ \newline
+              $\sigma_{\epsilon}^2 = \omega \sigma_d^2$
+            & $R^2_{GLMM(c)} = \frac{\sigma^2_f + \sum_{l=1}^u \sigma_l^2}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \omega \sigma_d^2}$ \newline
+              $\sigma_{\epsilon}^2 = \omega \sigma_d^2$ \\
+            \addlinespace
+            & \multicolumn{2}{p{\dimexpr0.85\linewidth\relax}}{
+                $\sigma_{f}^2$: Fixed effects variance. \newline
+                $\sigma_{l}^2$: $j^{th}$ random factor variance. \newline
+                $\sigma_{d}^2$: Distribution-specific variance.
+            } \\
+            \addlinespace
+            Binomial Data & \multicolumn{2}{l}{$\sigma_d^2 = \pi^2/3$} \\
+            Count Data & \multicolumn{2}{l}{$\sigma_d^2 = \ln (1/\exp(\beta_0) + 1)$} \\
+            \bottomrule
+        \end{tabular}
+    \end{threeparttable}
+\end{sidewaystable}
 
-\begin{itemize}
-    \item \textbf{$Z_{a1, ij}$}: continuous network quality for individual $i$ in cluster $j$, using $N(0, 1)$ to simulate.
+\begin{sidewaystable}
+    \centering
+    \caption{Marginal and Conditional R-squared for GLMM: Additive Overdispersion Model}
+    \label{tab:simulated_bf}
+    \begin{threeparttable}
+        \begin{tabular}{@{}p{0.15\linewidth} p{0.4\linewidth} p{0.4\linewidth}@{}}
+            \toprule
+            \multicolumn{1}{c}{Data} & \multicolumn{1}{c}{Marginal $R^2$} & \multicolumn{1}{c}{Conditional $R^2$} \\
+            \midrule
+            & $R^2_{GLMM(m)} = \frac{\sigma^2_f}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \sigma_e^2 + \sigma_d^2}$ \newline
+              $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$
+            & $R^2_{GLMM(c)} = \frac{\sigma^2_f + \sum_{l=1}^u \sigma_l^2}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \sigma_e^2 + \sigma_d^2}$ \newline
+              $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$ \\
+            \addlinespace
+            & \multicolumn{2}{p{\dimexpr0.85\linewidth\relax}}{
+                $\sigma_{f}^2$: Variance explained by the fixed effect components. \newline
+                $\sigma_{l}^2$: Variance of the $j^{th}$ random factor. \newline
+                $\sigma_{e}^2$: Additive overdispersion residual variance. \newline
+                $\sigma_{d}^2$: Distribution-specific variance.
+            } \\
+            \addlinespace
+            Binomial Data & \multicolumn{2}{l}{$\sigma_d^2 = \pi^2/3$} \\
+            Count Data & \multicolumn{2}{l}{$\sigma_d^2 = \ln (1/\text{exp}(\beta_0) + 1)$} \\
+            \bottomrule
+        \end{tabular}
+    \end{threeparttable}
+\end{sidewaystable}
 
-    \item \textbf{$Z_{a2, ij}$}:  binary indicator of sick status (1 = sick, 0 = health), using $Bin(0.1)$ to simulate.
-    
-    \item The baseline structural zero probability is set to $10\%$ for students with good network access and good health
 
-    \item An additional $20\%$ is added to the structural zero probability for students with poor health status.
 
+
+
+\setcounter{figure}{0}  % Reset figure counter
+\setcounter{table}{0}   % Reset table counter
+
+
+\end{document}
     \item A unit decrease in network quality leads to an approximate $15\%$ increase in structural zero probability;
 \end{itemize}
 
@@ -441,18 +702,13 @@ P(Y = y) =
 \section{Raudenbush \& Bryk $R^2$}
 
 \section{Proportional Change in Variance}
-Proportional Change in Variance (PCV) quantifies how the variance of random effects changes after introducing additional fixed-effect predictors. It helps assess whether a predictor explains between-group variability (e.g., school-level differences) or within-group variability (e.g., individual differences). The formula is given by:
-
-\begin{align*}
-    \text{PCV} = \frac{\hat{\sigma}^2_{u,\text{null}} - \hat{\sigma}^2_{u,\text{model}}}{\hat{\sigma}^2_{u,\text{null}}}
-\end{align*}
-
-where $\hat{\sigma}^2_{u,\text{null}}$ denotes the variance of the random intercept in the null model, and $\hat{\sigma}^2_{u,\text{model}}$ denotes the variance in the full model that includes additional predictors.
-
 
 
 \section{Nakagawa \& Schielzeth's $R^2$}
 
+\subsection{Marginal $R^2$}
+
+\subsection{Conditional $R^2$}
 
 \begin{table}[ht]
     \centering
@@ -521,8 +777,6 @@ Count Data & \multicolumn{2}{l}{$\sigma_d^2 = \ln (1/\text{exp}(\beta_0) + 1)$} 
         \end{tabular}
     \end{threeparttable}
 \end{table}
-
-\section{Simultion Result}
 
 \section{Conlcusion}
 

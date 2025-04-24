@@ -52,7 +52,7 @@ This repository contains simulation code, results, and analysis related to evalu
    Open and execute the `.Rmd` files in RStudio to run the simulations with and without zero inflation.
 
 2. **Load and Analyze Results:**  
-   Load `nonZI_R2s_Final.RData` in R to access computed R² and PCV values across models. Use `cetain graph for noZI results.R` to generate visual summaries.
+   Load `nonZI_R2s_Final.RData` in R to access computed R^2 and PCV values across models. Use `cetain graph for noZI results.R` to generate visual summaries.
 
 3. **Compile Final Report:**  
    Compile the `main` LaTeX file with `r-references.bib` using a LaTeX editor (e.g., Overleaf, TeXShop).

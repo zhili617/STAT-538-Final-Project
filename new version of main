@@ -149,7 +149,7 @@
 \begin{titlepage}
     \centering
     {\LARGE \textbf{STAT538 Final Project} \par}\vspace{1cm}
-    {\large \textbf{Understanding GLMM Fit Metrics: Comparing Binary, Poisson, and Zero-Inflated Models Across Cluster Designs} \par}
+    {\large \textbf{Understanding GLMM Fit Metrics: Comparing Binary, Poisson Models Across Cluster Designs} \par}
     \vspace{2cm}
     {\large Yingchi Guo\par}
     {\large Sijia Li\par}
@@ -279,7 +279,7 @@ In this formulation, $\sigma_f^2$ represents the variance explained by the fixed
 \subsection{Raudenbush \& Bryk $R^2$}
 
 \subsection{Proportional Change in Variance}
-Proportional Change in Variance (PCV) quantifies how the variance of random effects changes after introducing additional fixed-effect predictors. It helps assess whether a predictor explains between-group variability (e.g., school-level differences) or within-group variability (e.g., individual differences). The formula is given by:
+Based on the explanation from \citet{nakagawa2013}, the definition and equation of Proportional Change in Variance are given. It quantifies how the variance of random effects changes after introducing additional fixed-effect predictors. It helps assess whether a predictor explains between-group variability (e.g., school-level differences) or within-group variability (e.g., individual differences). The formula is given by:
 
 \begin{align*}
     \text{PCV} = \frac{\hat{\sigma}^2_{u,\text{null}} - \hat{\sigma}^2_{u,\text{model}}}{\hat{\sigma}^2_{u,\text{null}}}
@@ -323,7 +323,7 @@ In an additive model, the overdispersion is modeled through a residual term on t
     \log\left(\frac{p_{ij}}{1 - p_{ij}}\right) = \beta_0 + \alpha_i + e_{ij} \\
     \alpha_i \sim N(0, \sigma^2_{\alpha}) \\
     e_{ij} \sim N(0, \sigma_{e}^2)
-\end{align*} where $e_{ij}$ is the normally distributed residual term on the log scale, and $\sigma_e^2$ is the latent link-scale residual variance. When $\sigma_e^2=0$, the model reduces to the normal binomial GLMM. 
+\end{align*}  When $\sigma_e^2=0$, the model reduces to the normal Poisson GLMM. In both cases mentioned above, the model residual variance $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$. Table~\ref{tab:simulated_bf_aom} presents a summary of the additive model for binomial and count data.
 
 A simple GLMM for count data can be written as:
 \begin{align*}
@@ -331,7 +331,7 @@ A simple GLMM for count data can be written as:
     \mu_{ij}=exp(\beta_0 + \alpha_i + e_{ij}) \\
     \alpha_i \sim N(0, \sigma^2_{\alpha}) \\
     e_{ij} \sim N(0, \sigma_{e}^2)
-\end{align*}  When $\sigma_e^2=0$, the model reduces to the normal Poisson GLMM. In both cases mentioned above, the model residual variance $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$. Table~\ref{tab:simulated_bf_aom} presents a summary of additive model, for binomial and count data.
+\end{align*}  When $\sigma_e^2=0$, the model reduces to the normal Poisson GLMM. In both cases mentioned above, the model residual variance $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$. 
 
 \subsection{Conditional and Marginal $R^2$}
 
@@ -346,7 +346,7 @@ where $m$ in the parentheses indicates marginal $R^2$, $c$ in the parentheses in
 Based on the additive model, the marginal and conditional $R^2$ are:
 \begin{equation*}
     R^2_{GLMM(m)} = \frac{\sigma^2_f}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \sigma_e^2 + \sigma_d^2}, \quad R^2_{GLMM(c)} = \frac{\sigma^2_f + \sum_{l=1}^u \sigma_l^2}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \sigma_e^2 + \sigma_d^2} 
-\end{equation*} Table~\ref{tab:simulated_bf_multiplicative} and~\ref{tab:simulated_bf_additive} summarizes these formulae and presents specific formulae for binomial and count data.
+\end{equation*} Table~\ref{tab:simulated_bf_multiplicative} and~\ref{tab:simulated_bf_additive} summarize these formulae and present specific formulae for binomial and count data.
 
 \section{Simulation Design: Education Intervention Program}
 
@@ -450,8 +450,6 @@ The structural zero probability $\pi_{ij}$ is modeled using a logstic function
 \end{align*}
 
 \section{Simultion Result}
-
-\subsection{Result without Zero-inlfation}
 
 
 
@@ -579,13 +577,13 @@ This study offers a comprehensive evaluation of $R^2$ measures in generalized li
 
 Poisson GLMMs consistently achieve higher fit quality across all metrics, with conditional $R^2$ values approaching 1.0 and marginal values exceeding those observed in binary models. In contrast, binary GLMMs exhibit lower fixed-effect explanatory power and greater numerical instability. The PCV results exhibit extremely large negative values in the \texttt{logit\_small} model. Therefore, it is a good choice to use a more stable metric, McFadden, with similar evaluation content to replace PCV.
 
-Cluster size has a small impact in binary models, where smaller clusters yield more concentrated and slightly elevated $R^2$ values. This pattern is attributed to the increased influence of individual-level variation relative to between-cluster differences. The McFadden's $R^2$ changes more significantly with different sizes, especially in Pois GLMMs. $R^2$ become more concentrated and slightly higher, suggesting that McFadden’s $R^2$ is more stable and model fit improves with smaller clusters
+Cluster size has a small impact in binary models, where smaller clusters yield more concentrated and slightly elevated $R^2$ values. This pattern is attributed to the increased influence of individual-level variation relative to between-cluster differences. The McFadden's $R^2$ changes more significantly with different sizes, especially in Pois GLMMs. $R^2$ becomes more concentrated and slightly higher, suggesting that McFadden’s $R^2$ is more stable and model fit improves with smaller clusters.
 
 Comparison of Raudenbush and Nakagawa measures shows near-identical conditional $R^2$ values, supporting consistency in quantifying combined variance explained by fixed and random effects. However, marginal $R^2$ values from the two frameworks diverge more substantially, particularly under Poisson GLMMs, indicating  Raudenbush is more sensitive to distributional assumptions and variance decomposition approaches.
 
 Overall, Nakagawa’s conditional $R^2$ provides a stable and interpretable index for GLMM fit evaluation, especially when fixed and random effects are both of substantive interest. Careful selection of $R^2$ metrics while taking into account model structure, outcome distribution, and cluster design is essential for meaningful interpretation in applied multilevel modeling.
 
-Future research will explore more complex simulation designs by incorporating group-level covariates into the fixed-effect structure and increasing the number of random-effect components.
+Future research will explore more complex simulation designs by incorporating group-level covariates into the fixed-effect structure and increasing the number of random-effect components. Although the simulation design includes a zero-inflated version, due to time constraints and technical challenges, only the non-zero-inflated results are presented in this study. Future research will incorporate and analyze the zero-inflated models.
 
 
 
@@ -606,6 +604,9 @@ Future research will explore more complex simulation designs by incorporating gr
 R code for simulation method/ result can be found in https://github.com/zhili617/STAT-538-Final-Project
 
 \section{Extra tables}
+
+
+
 \begin{table}[ht]
     \centering
     \caption{Multiplicative Overdispersion Model}

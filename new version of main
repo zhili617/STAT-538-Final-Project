@@ -583,7 +583,7 @@ Comparison of Raudenbush and Nakagawa measures shows near-identical conditional 
 
 Overall, Nakagawa’s conditional $R^2$ provides a stable and interpretable index for GLMM fit evaluation, especially when fixed and random effects are both of substantive interest. Careful selection of $R^2$ metrics while taking into account model structure, outcome distribution, and cluster design is essential for meaningful interpretation in applied multilevel modeling.
 
-Future research will explore more complex simulation designs by incorporating group-level covariates into the fixed-effect structure and increasing the number of random-effect components. Although the simulation design includes a zero-inflated version, due to time constraints and technical challenges, only the non-zero-inflated results are presented in this study. Future research will incorporate and analyze the zero-inflated models.
+Future research will explore more complex simulation designs by incorporating group-level covariates into the fixed-effect structure and increasing the number of random-effect components. Although the simulation design includes a zero-inflated version, due to time constraints and technical challenges, only the non-zero-inflated results are presented in this study. Zero-inflation is common in real-world educational or biomedical data, and incorporating these features is essential for realistic performance assessment. Therefore, future studies will aim to include and evaluate zero-inflated GLMMs more comprehensively.
 
 
 

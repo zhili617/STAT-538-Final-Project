@@ -169,14 +169,14 @@
 
 Generalized linear mixed models (GLMMs) have been widely used in fields such as economics, psychology, and education to analyze hierarchical data (i.e., observations nested within higher-level clusters) with non-normal dependent variables. For example, when predicting a binary dependent variable—such as whether an individual should be diagnosed with depressive disorder—there are often multiple behavioral observations (e.g., food intake, sleep duration) made for the same individual. In such cases, GLMMs are appropriate for modeling the nested structure of the data while accommodating the binary nature of the dependent variable.
 
-With the increasing popularity of GLMMs comes a growing need to evaluate model fit, as an indicator of how well the specified model accounts for the variance in the data. Several information-based criteria have been proposed and are commonly used in practice, including the AIC, BIC, and DIC (in a Bayesian framework), as well as pseudo $R^2$ measures (e.g., McFadden’s pseudo $R^2$; @mcfadden1972) based on likelihood ratios. These information-based criteria are typically employed for model comparison using the same dataset, with the goal of selecting the best-fitting model. Meanwhile, McFadden’s pseudo $R^2$, as a likelihood-based measure, can also be used to evaluate the fit of a single model, interpreted as the degree of improvement over the intercept-only model.
+With the increasing popularity of GLMMs comes a growing need to evaluate model fit, as an indicator of how well the specified model accounts for the variance in the data. Several information-based criteria have been proposed and are commonly used in practice, including the AIC, BIC, and DIC (in a Bayesian framework), as well as pseudo $R^2$ measures (e.g., McFadden’s pseudo $R^2$; \citet{mcfadden1972}) based on likelihood ratios. These information-based criteria are typically employed for model comparison using the same dataset, with the goal of selecting the best-fitting model. Meanwhile, McFadden’s pseudo $R^2$, as a likelihood-based measure, can also be used to evaluate the fit of a single model, interpreted as the degree of improvement over the intercept-only model.
 
-Despite their widespread use, these measures have important limitations. As noted above, goodness-of-fit indices such as AIC, BIC, and DIC only assess relative model fit and do not provide information on how well the predictors explain variance in the dependent variable. Nor can they be used to compare results across studies [@claeskens2008; @nakagawa2007]. Additionally, neither goodness-of-fit measures nor likelihood-based indices offer insight into the proportion of outcome variance explained by the specified model [@orelien2008]. Given the increasing requirement from journals to report effect sizes, alternative measures—particularly $R^2$-based indices—should be considered.
+Despite their widespread use, these measures have important limitations. As noted above, goodness-of-fit indices such as AIC, BIC, and DIC only assess relative model fit and do not provide information on how well the predictors explain variance in the dependent variable. Nor can they be used to compare results across studies [\citet{claeskens2008}; \citet{nakagawa2007}]. Additionally, neither goodness-of-fit measures nor likelihood-based indices offer insight into the proportion of outcome variance explained by the specified model [\citet{orelien2008}]. Given the increasing requirement from journals to report effect sizes, alternative measures—particularly $R^2$-based indices—should be considered.
 
-Therefore, the purpose of this paper is to review a specific class of such measures: the $R^2$ indices proposed by @nakagawa2013. We aim to examine their effectiveness in quantifying the total outcome variance explained by the model at the population level. The remainder of this paper is organized as follows. We begin by reviewing the general structure of GLMMs, focusing on fixed-slope, random-intercept models. We then summarize existing $R^2$ measures for GLMs and LMMs separately, with special attention to the measures included in our simulation-based comparison. Next, we describe @nakagawa2013’s $R^2$ measures in detail and present simulation results comparing these measures with likelihood-based alternatives. We conclude with a discussion of future directions and practical recommendations for researchers conducting empirical studies.
+Therefore, the purpose of this paper is to review a specific class of such measures: the $R^2$ indices proposed by \citet{nakagawa2013}. We aim to examine their effectiveness in quantifying the total outcome variance explained by the model at the population level. The remainder of this paper is organized as follows. We begin by reviewing the general structure of GLMMs, focusing on fixed-slope, random-intercept models. We then summarize existing $R^2$ measures for GLMs and LMMs separately, with special attention to the measures included in our simulation-based comparison. Next, we describe \citet{nakagawa2013}’s $R^2$ measures in detail and present simulation results comparing these measures with likelihood-based alternatives. We conclude with a discussion of future directions and practical recommendations for researchers conducting empirical studies.
 
 \section{Generalized Linear Mixed Models}
-Generalized linear mixed models (GLMMs) are characterized by the inclusion of random effects across higher-level clusters, and they are designed to handle non-normal dependent variables. For simplicity, we present a two-level, fixed-slope random-intercept model, where the slopes of predictors do not vary across clusters, but cluster-specific intercepts are included [@raudenbush2002; and see @johnson2014 for $R^2$ measures for random-slope models]. When the dependent variable $y_{ij}$ follows a distribution from the exponential family, a fixed-slope random-intercept GLMM model is written as:
+Generalized linear mixed models (GLMMs) are characterized by the inclusion of random effects across higher-level clusters, and they are designed to handle non-normal dependent variables. For simplicity, we present a two-level, fixed-slope random-intercept model, where the slopes of predictors do not vary across clusters, but cluster-specific intercepts are included [\citet{raudenbush2002}; and see \citet{johnson2014} for $R^2$ measures for random-slope models]. When the dependent variable $y_{ij}$ follows a distribution from the exponential family, a fixed-slope random-intercept GLMM model is written as:
 \begin{equation}
 h(E(y_{ij})) = \mathbf{X}_{ij} \beta + u_j
 \tag{1}
@@ -193,7 +193,7 @@ It is important to note that Equation \ref{eq:glmm} does not explicitly include 
 \section{Existing $R^2$ measures for GLM}
 For GLMs, pseudo-$R^2$ measures are the most commonly reported goodness-of-fit metrics in applied research. However, none of these measures can be interpreted in the same way as the $R^2$ in linear regression models with normally distributed outcomes. Among the available options, a deviance-based measure and a likelihood-based measure are the most widely used; thus, we focus on these two here.
 
-Originally described by @cohen2002, the deviance-based measure is given by:
+Originally described by \citet{cohen2002}, the deviance-based measure is given by:
 \begin{equation}
 R^2_{Cohen} = \frac{D_{null} - D_{fitted}}{D_{null}}
 \tag{2}
@@ -234,7 +234,7 @@ In LMMs, however, one important consideration is whether level-2 residuals shoul
 
 \footnote{ For models with random slopes, if the variance attributable to the random slopes is treated as residual, the result is a marginal $R^2$; if it is treated as part of the model structure, the result is a conditional $R^2$.}
 
-@raudenbush2002 proposed a variance-reduction approach for computing $R^2$ in LMMs, based on Equation \ref{eq:r2resid}:
+\citet{raudenbush2002} proposed a variance-reduction approach for computing $R^2$ in LMMs, based on Equation \ref{eq:r2resid}:
 \begin{equation}
 R^2_{\text{R\&B}} = 1 - \frac{\sum_{j=1}^J \sum_{i=1}^{n_j} (y_{ij} - \hat{y}_{ij})^2}
 {\sum_{j=1}^J \sum_{i=1}^{n_j} (y_{ij} - \bar{y}_{ij})^2}
@@ -244,7 +244,7 @@ R^2_{\text{R\&B}} = 1 - \frac{\sum_{j=1}^J \sum_{i=1}^{n_j} (y_{ij} - \hat{y}_{i
 
 Here, $\bar{y}$ denotes the grand mean of the normally distributed outcome, $J$ is the number of clusters, and $n_j$ is the size of the $j$th cluster. The $\hat{y}_{ij}$ represents the model-predicted value for $y_{ij}$. Depending on whether $\hat{y}_{ij}$ is computed using only the fixed part of the model (i.e., $\mathbf{X}_{ij}\beta$, as in Equation \ref{eq:glmm}), or both fixed and random parts (i.e., $\mathbf{X}_{ij}\beta + u_j$), the resulting measure corresponds to marginal or conditional $R^2$, respectively.
 
-Based on the alternative definition of $R^2$ in Equation \ref{eq:r2}, @snijders2011 proposed a total variance decomposition approach:
+Based on the alternative definition of $R^2$ in Equation \ref{eq:r2}, \citet{snijders2011} proposed a total variance decomposition approach:
 \begin{equation}
 R^2_{\text{S\&B}} = 
 \frac{\gamma_X^\prime \Sigma_X \gamma_X}
@@ -255,7 +255,7 @@ R^2_{\text{S\&B}} =
 
 Here, $\gamma_X$ is analogous to $\beta$ in Equation \ref{eq:glmm}, and $\Sigma_X$ is the covariance matrix of $\mathbf{X}_{ij}$. The term $\tau_{00}$ represents the variance of $u_j$, and $\sigma^2$ denotes the level-1 residual variance. This $R^2_{\text{S\&B}}$ can be interpreted as the proportion of total outcome variance explained by the fixed effects, including both intercept and slopes.
 
-Similarly, @nakagawa2013 proposed conditional and marginal $R^2$ measures based on the same decomposition logic:
+Similarly, \citet{nakagawa2013} proposed conditional and marginal $R^2$ measures based on the same decomposition logic:
 \begin{equation}
 R^2_{\text{Nakagawa}} = 
 \frac{\sigma_f^2 + \sigma_l^2}

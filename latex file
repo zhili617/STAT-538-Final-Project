@@ -163,7 +163,98 @@
 
 \section{Introduction}
 
-\section{Data Description}
+\section{Simulation Design: Education Intervention Program}
+
+
+The simulation represents an \textit{educational intervention evaluation plan} designed to assess the effectiveness of a distance learning course implemented across $100$ schools. The data-generating structure involves two levels of covariates:
+
+\begin{itemize}
+    \item \textbf{Individual-level variables} $\mathbf{X}_w = (X_{w1}, X_{w2})$, where $X_{w1}$ denotes \textit{Participation} and $X_{w2}$ denotes \textit{Pretest Score}.
+    \item \textbf{School-level variables} $\mathbf{X}_b = (X_{b1}, X_{b2})$, where $X_{b1}$ represents \textit{School Funding} and $X_{b2}$ represents a \textit{Resource Index}.
+\end{itemize}
+
+Each school (cluster) contains a fixed number of students. Two experimental conditions define different class size scenarios:
+
+\begin{itemize}
+    \item \textbf{Small cluster scenario:} 5 students per school
+    \item \textbf{Large cluster scenario:} 50 students per school
+\end{itemize}
+
+Unobserved heterogeneity across schools is modeled using \textit{random intercepts}:
+\[
+u_j \sim \mathcal{N}(0, \tau^2)
+\]
+
+Under this hierarchical framework, the simulation investigates four outcome types using generalized linear mixed models (GLMMs) and their zero-inflated extensions. Each outcome corresponds to a distinct research question.
+
+
+\subsection{Binary GLMM}
+Did the intervention course increase the probability of students passing the final assessment (0/1)?
+
+\textbf{Corresponding Variable}: Whether the course is passed (\texttt{y = 1} passed, \texttt{y = 0} failed)
+\begin{align*}
+    \text{logit}(p_{ij}) = \beta_0 + \beta_1 X_{w1,ij} + \beta_2 X_{w2,ij} + \beta_3 X_{b1,j} + \beta_4 X_{b2,j} + u_{j}
+\end{align*}
+
+where $i$ refer to the ith student and $j$ refer to the jth school.
+
+\subsection{Poisson GLMM}
+How many Self-Study Modules do students complete during the course?
+
+\textbf{Corresponding Variable}: The number of completed Modules.
+
+\begin{align*}
+    \log(\lambda_{ij}) = \beta_0 + \beta_1 X_{w1,ij} + \beta_2 X_{w2,ij} + \beta_3 X_{b1,j} + \beta_4 X_{b2,j} + u_{j}
+\end{align*}
+
+\subsection{Zero-inflated GLMM}
+
+We designed a zero-inflated binary data-generating mechanism in which the probability of a structural zero depends on baseline risk and two binary covariates: network quality and student health status. Specifically:
+
+\begin{itemize}
+    \item \textbf{$Z_{a1, ij}$}: continuous network quality for individual $i$ in cluster $j$.
+
+    \item \textbf{$Z_{a2, ij}$}:  binary indicator of sick status (1 = sick, 0 = health).
+    
+    \item The baseline structural zero probability is set to $10\%$ for students with good network access and good health
+
+    \item An additional $20\%$ is added to the structural zero probability for students with poor health status.
+
+    \item A unit decrease in network quality leads to an approximate $15\%$ increase in structural zero probability;
+\end{itemize}
+
+The structural zero probability $\pi_{ij}$ is modeled using a logstic function
+\begin{align*}
+    \text{logit}(\pi_{ij}) = \gamma_0 + \gamma_1 Z_{a1, ij} + \gamma_2 Z_{a2, ij}
+\end{align*}
+
+
+
+\subsubsection{Zero-inflated Binary GLMM}
+There are some students who fail the course because they never take the test.
+
+
+\[
+P(Y_{ij} = y) = 
+\begin{cases}
+\pi_{ij} + (1 - \pi_{ij})(1 - p_{ij}), & \text{if } y = 0 \\
+(1 - \pi_{ij}) p_{ij}, & \text{if } y = 1
+\end{cases}
+\]
+
+\subsubsection{Zero-inflated Poisson GLMM}
+
+There are some students who do not complete any module due to sickness and bad internet.
+
+\[
+P(Y = y) = 
+\begin{cases}
+\pi_{ij} + (1 - \pi_{ij})e^{-\lambda_{ij}}, & \text{if } y = 0 \\
+(1 - \pi_{ij}) \dfrac{e^{-\lambda_{ij}} \lambda_{ij}^y}{y!}, & \text{if } y > 0
+\end{cases}
+\]
+
+
 
 \subsection{Binary GLMM}
 

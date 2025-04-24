@@ -293,7 +293,7 @@ where $\hat{\sigma}^2_{u,\text{null}}$ denotes the variance of the random interc
 
 In GLMM, there is no direct estimate of residual variance $\sigma_e^2$. Since data is modeled through a link function in GLMM (e.g., logit link, probit link, log link, etc.), an alternative way is to consider residual variance as the variance not captured by the link function. \citet{nakagawa2013} proposed that the residual variance can be decomposed into three components: (1) the latent link-scale distribution variance, (2) the overdispersion parameter obtained from the dataset, representing the variance not captured by the distribution-specific variance, and (3) a link-scale residual variance. Two models are employed for calculating these components: a multiplicative overdispersion model and an additive overdispersion model.  In this section, we first define the multiplicative overdispersion model and additive overdispersion model. Second, we define marginal and conditional $R^2$ based on these models, respectively. 
 
-\subsection{Muplicative and Additive Overdispersion Model}
+\subsection{Multiplicative and Additive Overdispersion Model}
 In a multiplicative model, the overdipersion is modeled through an additional parameter in the distribution of the response variable. A simple GLMM for binomial data can be written as: 
 \begin{align*}
     Y_{ij} \sim \text{Overdispersed Binomial}(m_{ij}, p_{ij}, \omega) \\
@@ -312,7 +312,10 @@ A simple GLMM for count data can be written as:
 In both cases mentioned above, $\sigma_{\epsilon}^2 = \omega \sigma_{d}^2$, where $\sigma_d^2$ is the variance of the link-scale distribution. For binomial data, $\sigma_d^2$ is the variance of the logistic distribution, let $d_l \sim \text{Logistic}(0,1)$, that is:
 \begin{align*}
     \sigma_d^2 = E[d_l^2] - (E[d_l])^2 = \int_{-\infty}^{\infty} d_l^2 \cdot \frac{e^{-d_l}}{(1 + e^{-d_l})^2} \, dx  - 0 = \frac{\pi^2}{3}
-\end{align*} For Poisson data, $\sigma_d^2$ is the variance of the variance of the Poisson distribution, that is: $\sigma_d^2 = ln(1/e^{\beta_0} + 1)$.  
+\end{align*} For Poisson data, $\sigma_d^2$ is the variance of the variance of the lognormal approximation for a Poisson distribution, let $d_p \sim \text{Log$N$($\mu, \sigma^2$)}$ to match a Poisson distribution with mean and variance of $\lambda$: \begin{align*}
+    E[d_p] = e^{\mu + \sigma^2/2} = \lambda, &\quad \mu = ln(\lambda) - \frac{\sigma^2}{2} \\
+    Var(d_p) = (e^{\sigma^2}-1)e^{2\mu + \sigma^2} = \lambda, &\quad (e^{\sigma^2}-1)\lambda^2 = \lambda, \quad \sigma^2 = ln(1 + \frac{1}{\lambda})
+\end{align*} Therefore, $\sigma_d^2 = ln(1 + \frac{1}{\lambda})$ (see also \citet{nakagawa2017r2icc}). Table~\ref{tab:simulated_bf_mom} presents a summary of multiplicative models, for binomial and count data.  
 
 In an additive model, the overdispersion is modeled through a residual term on the latent link scale (\citet{browne2005variance}). A simple GLMM for binomial data can be written as:
 \begin{align*}
@@ -328,9 +331,22 @@ A simple GLMM for count data can be written as:
     \mu_{ij}=exp(\beta_0 + \alpha_i + e_{ij}) \\
     \alpha_i \sim N(0, \sigma^2_{\alpha}) \\
     e_{ij} \sim N(0, \sigma_{e}^2)
-\end{align*}  When $\sigma_e^2=0$, the model reduces to the normal Poisson GLMM. In both cases mentioned above, the model residual variance $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$. 
+\end{align*}  When $\sigma_e^2=0$, the model reduces to the normal Poisson GLMM. In both cases mentioned above, the model residual variance $\sigma_{\epsilon}^2 = \sigma_e^2 + \sigma_d^2$. Table~\ref{tab:simulated_bf_aom} presents a summary of additive model, for binomial and count data.
 
 \subsection{Conditional and Marginal $R^2$}
+
+For GLMM, two types of $R^2$ are usually considered: the marginal $R^2$ and conditional $R^2$. The marginal $R^2$ measures the proportion of variance in the response variable explained by the fixed effects in the model. The conditional $R^2$ measures the proportion of variance in the response variable explain by the fixed effects and random effects in the model. Based on the multiplicative and additive overdispersion model defined above, the conditional and marginal $R^2$ of GLMM can be defined accordingly. 
+
+Based on the multiplicative model, the marginal and conditional $R^2$ are: 
+\begin{equation*}
+    R^2_{GLMM(m)} = \frac{\sigma^2_f}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \omega \sigma_d^2}, \quad R^2_{GLMM(c)} = \frac{\sigma^2_f + \sum_{l=1}^u \sigma_l^2}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \omega \sigma_d^2}
+\end{equation*}
+where $m$ in the parentheses indicates marginal $R^2$, $c$ in the parentheses indicates conditional $R^2$, $\sigma_f^2$ indicates the variance explained by the fixed effects, $\sigma_l^2$ indicates the variance explained by the random effects. 
+
+Based on the additive model, the marginal and conditional $R^2$ are:
+\begin{equation*}
+    R^2_{GLMM(m)} = \frac{\sigma^2_f}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \sigma_e^2 + \sigma_d^2}, \quad R^2_{GLMM(c)} = \frac{\sigma^2_f + \sum_{l=1}^u \sigma_l^2}{\sigma_{f}^2 + \sum_{l=1}^u \sigma_l^2 + \sigma_e^2 + \sigma_d^2} 
+\end{equation*} Table~\ref{tab:simulated_bf_multiplicative} and~\ref{tab:simulated_bf_additive} summarizes these formulae and presents specific formulae for binomial and count data.
 
 \section{Simulation Design: Education Intervention Program}
 

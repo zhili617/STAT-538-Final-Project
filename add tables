@@ -38,6 +38,9 @@
 \usepackage{appendix}
 \usepackage{natbib}
 % \usepackage[utf8]{inputenc} %archaic
+\usepackage{threeparttable}
+\usepackage{booktabs}
+\usepackage{amsmath}
 \usepackage{verbatim}
 \usepackage{titlesec}
 \usepackage{listings}

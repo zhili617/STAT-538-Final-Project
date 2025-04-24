@@ -778,7 +778,144 @@ Count Data & \multicolumn{2}{l}{$\sigma_d^2 = \ln (1/\text{exp}(\beta_0) + 1)$} 
     \end{threeparttable}
 \end{table}
 
+\section{Simultion Result}
+
+\subsection{Result without Zero-inlfation}
+
+
+
+This analysis conducts 500 simulations to assess the performance of Poisson and Binomial GLMMs under both small (\texttt{size = 5}) and large (\texttt{size = 50}) sample sizes. Nakagawa $R^2$ is obtained using the \texttt{performance} package, whereas Raudenbush $R^2$, PCV, McFadden $R^2$, and Non-converges check are computed manually in batch according to their analytical definitions.
+
+\subsubsection{General Analysis of Different Metrics by Model}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plot_dir/box.png}
+    \caption{Boxplots of McFadden $R^2$, Nakagawa $R^2$, PCV, and Raudenbush $R^2$ Across Binary and Poisson GLMMs with Varying Cluster Sizes}
+    \label{box}
+\end{figure}
+
+Based on the Figure \ref{box}, the following discussion are made:
+\begin{itemize}
+    \item \textbf{McFadden $R^2$:} In \textbf{Poisson GLMMs}, the McFadden $R^2$ values always remain high (between 0.75 and 1), indicating that the full models show substantial improvement in log-likelihood over the null models. In contrast, \textbf{Binomial GLMMs} yield significantly lower $R^2$ values ( between 0.1 and 0.3), which is consistent with the nature of binary response data and the inherent upper bound of McFadden’s $R^2$ in such settings. At smaller cluster sizes, $R^2$ values for both model types become more concentrated and slightly higher, suggesting that McFadden’s $R^2$ is more stable and model fit improves with smaller clusters. This pattern is particularly evident in Poisson GLMMs. These results collectively indicate that Poisson GLMMs demonstrate higher predictive efficiency and better model fit under the current data-generating mechanism.
+
+    \item \textbf{Nakagawa $R^2$:} The results show a clear contrast between model types. In \textbf{Poisson GLMMs}, the \texttt{marginal $R^2$} values are substantially high (between 0.65 - 0.8), indicating that fixed effects explain a large portion of the variance. \texttt{Conditional $R^2$} values are consistently near 1.0, suggesting that the combination of fixed and random effects nearly fully explains the model variance. In contrast, \textbf{Binomial GLMMs} exhibit much lower \texttt{marginal $R^2$} values (between 0.3 and 0.4), which shows the relatively limited explanatory power of fixed effects in binary response data. However, the corresponding \texttt{conditional $R^2$} values are slightly higher, implying that a considerable portion of the explained variance arises from random effects such as cluster-level variation. Additionally, models with smaller cluster sizes tend to produce more concentrated $R^2$ values. This suggests the improvement of model stability under such configurations.
+
+    \item \textbf{Non Converges:} Convergence status is monitored across all simulations to assess model stability. Non-convergence occurs only a few times (basically 8 times), within the large-sample Binomial GLMMs, indicating that estimation procedures across all four model types remain stable under the current simulation design.
+
+    \item \textbf{PCV:} The PCV results exhibit extremely large negative values in the \texttt{logit\_small} model. This behavior is likely caused by the near-zero variance of the random effect in the null model, which leads to numerical instability in the PCV calculation. As a result, the boxplots for other models are visually compressed and difficult to interpret on the same scale. In contrast, the McFadden $R^2$ metric mitigates this issue by computing a log-likelihood ratio rather than a raw variance ratio. This transformation avoids numerical divergence when the denominator is small, making McFadden $R^2$ a more robust alternative for assessing model explanatory power, particularly when comparing full and null models.
+
+    \item \textbf{Raudenbush $R^2$:} This value reveals clear differences between model types. \texttt{Conditional $R^2$} values for Poisson GLMMs approach 1.0, indicating that nearly all variance is accounted for by the combination of fixed and random effects. In contrast, Binomial GLMMs exhibit substantially lower \textbf{conditional $R^2$} values, particularly in the large-cluster setting. \texttt{Marginal $R^2$} values highlight a similar pattern. Poisson models demonstrate moderate to high fixed-effect explanatory power (median $\approx$ 0.4--0.5), whereas Binomial models show near-zero \texttt{marginal $R^2$} values, suggesting that most of their explanatory power stems from random effects rather than covariates. These results support the conclusion that Poisson GLMMs, under the given data-generating conditions, are more effective in capturing variance structure.
+
+\end{itemize}
+
+
+\subsubsection{Comparing Raudenbush and Nakagawa $R^2$}
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{plot_dir/Rplot01.png}
+        \caption{Correlation Between Nakagawa and Raudenbush Conditional $R^2$ Across GLMM Structures}
+    \end{minipage}
+    \hfill
+     \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{plot_dir/N M vs R M.png}
+        \caption{Correlation Between Nakagawa and Raudenbush Marginal $R^2$ Across GLMM Structures}
+    \end{minipage}
+    \caption{Comparing Raudenbush and Nakagawa $R^2$}
+    \label{1}
+\end{figure}
+
+Figure \ref{1} displays the pairwise comparisons between Nakagawa and Raudenbush $R^2$ measures for both marginal and conditional definitions. \texttt{Conditional $R^2$} values show a nearly perfect linear relationship across all model types, indicating that the two formulations agree strongly in quantifying the combined explanatory power of fixed and random effects.
+
+In contrast, the comparison of \texttt{marginal $R^2$} reveals substantial divergence, particularly within Poisson GLMMs. While the two metrics remain consistent in Binomial GLMMs, \texttt{Raudenbush marginal $R^2$} exhibits greater variability and more outliers in the Poisson case. This suggests that Raudenbush's formulation may be more sensitive to distributional skewness or model-specific variance structures, and should be interpreted with caution when used in conjunction with Poisson models.
+
+
+\subsubsection{Summary of Fit Metric Distributions}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{plot_dir/P1.png}
+    \caption{Distribution of Fit Metrics by Model}
+    \label{hist}
+\end{figure}
+
+Figure \ref{hist} presents the distribution of 3 fit metrics across four GLMM structures, allowing for a direct visual comparison of metric behavior and stability. It shows that Poisson GLMMs consistently achieve higher values across all fit metrics, with \texttt{McFadden} and \texttt{Conditional $R^2$} values clustering near 1.0. In contrast, Binary GLMMs yield lower and more dispersed metrics, particularly in \texttt{marginal $R^2$} measures. These results suggest that under the current data-generating mechanism, Poisson models offer superior explanatory power and model fit stability.
+
+
+
+\begin{table}[ht]
+\centering
+\caption{GLMM Model Summary Statistics}
+\label{tab:glmm_r2}
+\begin{tabular}{llcccc}
+\toprule
+\textbf{Model} & \textbf{Metric} & \textbf{Mean} & \textbf{SD} & \textbf{CI Lower} & \textbf{CI Upper} \\
+\midrule
+\multirow{6}{*}{logit\_large} 
+  & McFaddenR2                  & 0.2051 & 0.0117 & 0.1842 & 0.2294 \\
+  & Nakagawa\_Conditional\_R2   & 0.4774 & 0.0220 & 0.4355 & 0.5167 \\
+  & Nakagawa\_Marginal\_R2      & 0.3208 & 0.0146 & 0.2833 & 0.3618 \\
+  & PCV                         & -0.6766 & 0.1068 & -0.9055 & -0.4731 \\
+  & Raudenbush\_Conditional\_R2 & 0.3134 & 0.0179 & 0.2795 & 0.3475 \\
+  & Raudenbush\_Marginal\_R2    & 0.1804 & 0.0139 & 0.1573 & 0.2076 \\
+\midrule
+\multirow{6}{*}{logit\_small} 
+  & McFaddenR2                  & 0.0845 & 0.0226 & 0.0563 & 0.1252 \\
+  & Nakagawa\_Conditional\_R2   & 0.4648 & 0.2721 & 0.3259 & 0.6184 \\
+  & Nakagawa\_Marginal\_R2      & 0.3268 & 0.0525 & 0.2682 & 0.4258 \\
+  & PCV                         & -Inf & --- & -6.0768 & 1.1123 \\
+  & Raudenbush\_Conditional\_R2 & 0.3605 & 0.0705 & 0.2182 & 0.5033 \\
+  & Raudenbush\_Marginal\_R2    & 0.1831 & 0.0832 & 0.1099 & 0.2609 \\
+\midrule
+\multirow{6}{*}{pois\_large} 
+  & McFaddenR2                  & 0.9254 & 0.0108 & 0.8998 & 0.9527 \\
+  & Nakagawa\_Conditional\_R2   & 0.9900 & 0.0160 & 0.9920 & 0.9998 \\
+  & Nakagawa\_Marginal\_R2      & 0.6605 & 0.0307 & 0.6004 & 0.7172 \\
+  & PCV                         & 0.0828 & 0.0538 & -0.0247 & 0.1909 \\
+  & Raudenbush\_Conditional\_R2 & 0.9778 & 0.0100 & 0.9955 & 0.9995 \\
+  & Raudenbush\_Marginal\_R2    & 0.3281 & 0.1040 & 0.1243 & 0.5193 \\
+\midrule
+\multirow{6}{*}{pois\_small} 
+  & McFaddenR2                  & 0.8744 & 0.0288 & 0.8159 & 0.9228 \\
+  & Nakagawa\_Conditional\_R2   & 0.9896 & 0.0023 & 0.9948 & 0.9932 \\
+  & Nakagawa\_Marginal\_R2      & 0.6614 & 0.0358 & 0.5914 & 0.7297 \\
+  & PCV                         & 0.3701 & 0.0884 & 0.1924 & 0.5128 \\
+  & Raudenbush\_Conditional\_R2 & 0.9979 & 0.0013 & 0.9945 & 0.9998 \\
+  & Raudenbush\_Marginal\_R2    & 0.3498 & 0.1558 & 0.1185 & 0.6541 \\
+\bottomrule
+\end{tabular}
+\label{table}
+\end{table}
+
+Based on the table \ref{table}, the following result can be presented:
+\begin{itemize}
+    
+\item In Binary GLMMs, smaller cluster sizes slightly improve the fixed-effect explanatory power, as reflected in higher \texttt{Raudenbush marginal and Raudenbush conditional $R^2$} values. This effect likely arises from the increased influence of individual-level variation relative to cluster-level random effects in smaller groups. However, PCV calculations become unstable due to near-zero random effect variances in null models. Also, 
+\texttt{Nakagawa conditional $R^2$} shows greater variability in the small-cluster setting, suggesting increased sensitivity to sampling noise when within-cluster counts are low.
+
+\item For Poisson GLMMs, cluster size has limited impact on overall model fit, as both small and large cluster designs yield high $R^2$ values across all metrics. 
+
+\end{itemize}
+
+
+
 \section{Conlcusion}
+This study offers a comprehensive evaluation of $R^2$ measures in generalized linear mixed models (GLMMs), focusing on Binary and Poisson GLMMs under two types of cluster size (small =5, large = 50). Through 500 times simulation-based analysis, several fit indices are compared, including McFadden's $R^2$, Nakagawa's marginal and conditional $R^2$, Raudenbush's marginal and conditional $R^2$, the Non-converges check, and the Proportional Change in Variance (PCV).
+
+Poisson GLMMs consistently achieve higher fit quality across all metrics, with conditional $R^2$ values approaching 1.0 and marginal values exceeding those observed in binary models. In contrast, binary GLMMs exhibit lower fixed-effect explanatory power and greater numerical instability. The PCV results exhibit extremely large negative values in the \texttt{logit\_small} model. Therefore, it is a good choice to use a more stable metric, McFadden, with similar evaluation content to replace PCV.
+
+Cluster size has a small impact in binary models, where smaller clusters yield more concentrated and slightly elevated $R^2$ values. This pattern is attributed to the increased influence of individual-level variation relative to between-cluster differences.
+
+Comparison of Raudenbush and Nakagawa measures shows near-identical conditional $R^2$ values, supporting consistency in quantifying combined variance explained by fixed and random effects. However, marginal $R^2$ values from the two frameworks diverge more substantially, particularly under Poisson GLMMs, indicating  Raudenbush is more sensitive to distributional assumptions and variance decomposition approaches.
+
+Overall, Nakagawa’s conditional $R^2$ provides a stable and interpretable index for GLMM fit evaluation, especially when fixed and random effects are both of substantive interest. Careful selection of $R^2$ metrics while taking into account model structure, outcome distribution, and cluster design is essential for meaningful interpretation in applied multilevel modeling.
+
+Future research will explore more complex simulation designs by incorporating group-level covariates into the fixed-effect structure and increasing the number of random-effect components.
+
 
 \nocite{*}
 \bibliographystyle{apalike}  

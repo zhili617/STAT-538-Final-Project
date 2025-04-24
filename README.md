@@ -2,9 +2,9 @@
 
 This repository contains simulation code, results, and analysis related to evaluating Generalized Linear Mixed Models (GLMMs) under different data conditions and model structures. The focus is on comparing model fit metrics such as R-squared measures and PCV across Binary, Poisson, and Zero-Inflated models, with both small and large cluster sizes.
 
-## 📁 File Overview
+## 📂 File Overview
 
-### 🔬 Simulation and Modeling
+### 💻 Simulation and Modeling
 
 - **`STAT538Simulation_final.Rmd`**  
   Simulation and modeling file *without* zero inflation. Includes:
@@ -35,7 +35,7 @@ This repository contains simulation code, results, and analysis related to evalu
 - **`certain graph for noZI results. R`**  
   Script to generate summary plots and tables based on the simulation results from `nonZI_R2s_Final.RData`.
 
-### 📄 Report and Bibliography
+### 📃 Report and Bibliography
 
 - **`main`**  
   LaTeX file for the final report:  
@@ -46,7 +46,7 @@ This repository contains simulation code, results, and analysis related to evalu
 
 ---
 
-## 🛠 Instructions
+## ⛏️ Instructions
 
 1. **Run Simulations:**  
    Open and execute the `.Rmd` files in RStudio to run the simulations with and without zero inflation.

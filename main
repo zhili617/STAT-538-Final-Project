@@ -583,7 +583,7 @@ Under this hierarchical framework, the simulation investigates four outcome type
 \setcounter{table}{0}   % Reset table counter
 
 
-\end{document}
+\begin{itemize}
     \item A unit decrease in network quality leads to an approximate $15\%$ increase in structural zero probability;
 \end{itemize}
 
@@ -932,5 +932,7 @@ Future research will explore more complex simulation designs by incorporating gr
 \setcounter{figure}{0}  % Reset figure counter
 \setcounter{table}{0}   % Reset table counter
 
+\section{Software}
+R code for simulation method/ result can be found in https://github.com/zhili617/STAT-538-Final-Project
 
 \end{document}

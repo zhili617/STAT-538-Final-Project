@@ -44,6 +44,9 @@ This repository contains simulation code, results, and analysis related to evalu
 - **`r-references.bib`**  
   The BibTeX file contains references used in the LaTeX report.
 
+- **`plot_dir`**  
+  The folder contains all the figures from `certain graph for noZI results. R`.
+
 ---
 
 ## ⛏️ Guide

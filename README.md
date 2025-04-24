@@ -37,7 +37,7 @@ This repository contains simulation code, results, and analysis related to evalu
 
 ### 📃 Report and Bibliography
 
-- **`main`**  
+- **`new version of main`**  
   LaTeX file for the final report:  
   *Understanding GLMM Fit Metrics: Comparing Binary, Poisson, and Zero-Inflated Models Across Cluster Designs*
 
@@ -47,6 +47,8 @@ This repository contains simulation code, results, and analysis related to evalu
 - **`plot_dir`**  
   The folder contains all the figures from `certain graph for noZI results. R`.
 
+  - **`main`**  
+  An earlier version of the report.
 ---
 
 ## ⛏️ Guide
@@ -58,4 +60,4 @@ This repository contains simulation code, results, and analysis related to evalu
    Load `nonZI_R2s_Final.RData` in R to access computed R^2 and PCV values across models. Use `cetain graph for noZI results.R` to check visual summaries.
 
 3. **Read Final Report:**  
-   Open the `main` LaTeX file with `r-references.bib` using a LaTeX editor (e.g., Overleaf, TeXShop).
+   Open the `new version of main` LaTeX file with `r-references.bib` using a LaTeX editor (e.g., Overleaf, TeXShop).

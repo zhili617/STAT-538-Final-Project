@@ -708,7 +708,7 @@ R code for simulation method/ result can be found in https://github.com/zhili617
             } \\
             \addlinespace
             Binomial Data & \multicolumn{2}{l}{$\sigma_d^2 = \pi^2/3$} \\
-            Count Data & \multicolumn{2}{l}{$\sigma_d^2 = \ln (1/\exp(\beta_0) + 1)$} \\
+            Count Data & \multicolumn{2}{l}{$\sigma_d^2 = \ln (1/\lambda + 1)$} \\
             \bottomrule
         \end{tabular}
     \end{threeparttable}
@@ -736,7 +736,7 @@ R code for simulation method/ result can be found in https://github.com/zhili617
             } \\
             \addlinespace
             Binomial Data & \multicolumn{2}{l}{$\sigma_d^2 = \pi^2/3$} \\
-            Count Data & \multicolumn{2}{l}{$\sigma_d^2 = \ln (1/\text{exp}(\beta_0) + 1)$} \\
+            Count Data & \multicolumn{2}{l}{$\sigma_d^2 = \ln (1/\lambda + 1)$} \\
             \bottomrule
         \end{tabular}
     \end{threeparttable}

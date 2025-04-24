@@ -9,15 +9,15 @@ This repository contains simulation code, results, and analysis related to evalu
 - **`STAT538Simulation_final.Rmd`**  
   Simulation and modeling file *without* zero inflation. Includes:
   - Simulated data generation for binary and Poisson GLMMs
-  - Model fitting for:
+  - Model fitting for (smallsize = 5, largesize = 50):
     - `fit_logit_smallsize`
     - `fit_logit_largesize`
     - `fit_pois_smallsize`
     - `fit_pois_largesize`
   - Computation of model fit metrics:
-    - McFadden R²
-    - Nakagawa Marginal and Conditional R²
-    - Raudenbush Marginal and Conditional R²
+    - McFadden $R^2$
+    - Nakagawa Marginal and Conditional $R^2$
+    - Raudenbush Marginal and Conditional $R^2$
     - PCV (Proportional Change in Variance)
   - Non-convergence check code for model diagnostics
 
@@ -25,14 +25,14 @@ This repository contains simulation code, results, and analysis related to evalu
   Contains similar simulation and modeling processes *with* zero-inflated models included.
 
 - **`STAT538Simulation.Rmd`**  
-  Earlier version of the simulation code.
+  An earlier version of the simulation code.
 
 ### 📊 Results and Visualization
 
 - **`nonZI_R2s_Final.RData`**  
   A compiled dataset containing the results of 500 simulations without zero inflation. Includes all model fit metrics for each replicate.
 
-- **`cetain graph for noZI results.R`**  
+- **`certain graph for noZI results. R`**  
   Script to generate summary plots and tables based on the simulation results from `nonZI_R2s_Final.RData`.
 
 ### 📄 Report and Bibliography
@@ -42,7 +42,7 @@ This repository contains simulation code, results, and analysis related to evalu
   *Understanding GLMM Fit Metrics: Comparing Binary, Poisson, and Zero-Inflated Models Across Cluster Designs*
 
 - **`r-references.bib`**  
-  BibTeX file containing references used in the LaTeX report.
+  The BibTeX file contains references used in the LaTeX report.
 
 ---
 
@@ -56,11 +56,3 @@ This repository contains simulation code, results, and analysis related to evalu
 
 3. **Compile Final Report:**  
    Compile the `main` LaTeX file with `r-references.bib` using a LaTeX editor (e.g., Overleaf, TeXShop).
-
----
-
-## 📬 Contact
-
-For questions or feedback, please contact [your name and contact info here].
-
----

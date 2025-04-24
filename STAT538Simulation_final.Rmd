@@ -74,7 +74,7 @@ simulateData <- function(ncluster, size, betas, varxw, varxb, tau, type){
 
 ```{r}
 set.seed(555)
-nrep = 300
+nrep = 500
 
 betas <- c(2,1,1)
 varxw <- diag(c(1,1))
@@ -333,7 +333,12 @@ save(results, file = "nonZI_200rep_seed444.RData")
 ```{r}
 load("nonZI_200rep_seed444_modelfit.RData")
 load("nonZI_300rep_seed555_modelfit.RData")
-fitmodels <- c(fit, fit555);rm(fit555)
+fitmodels <- NULL
+for (i in 1:length(fit)){
+  fitmodels[[i]] <- c(fit[[i]], fit555[[i]])
+}
+names(fitmodels) <- names(fit)
+
 # ---- helper functions ----
 extract_model_metrics <- function(fit, family) {
   # convergence
@@ -394,7 +399,7 @@ results <- list(
   pois_small   = results_pois_smallsize,
   pois_large   = results_pois_largesize
 )
-save(results, file = "R2s.RData")
+save(results, file = "nonZI_R2s_Final.RData")
 ```
 
 
@@ -410,7 +415,7 @@ varx <- diag(c(0,1,1))
 pop_var_fix <- t(betas) %*% varx %*% betas
 pop_var_rand_part1 <- 0
 pop_var_rand_part2 <- tau[1,1]
-pop_var_residual <- 1
+pop_var_residual <- 0
 pop_var_link_logit <- (pi^2)/3
 pop_beta0 <- betas[1]
 pop_var_link_pois <- log(1/exp(pop_beta0) + 1)
@@ -425,6 +430,10 @@ pop_totalvar_pois <- pop_var_fix + pop_var_rand_part1 + pop_var_rand_part2 + pop
 pop_marginalR2 <- pop_var_fix/ pop_totalvar_pois
 pop_conditionalR2 <- (pop_var_fix + pop_var_rand_part1 + pop_var_rand_part2)/pop_totalvar_pois
 
+colMeans(results$logit_small,na.rm = T)
+colMeans(results$logit_large,na.rm = T)
+colMeans(results$pois_small,na.rm = T)
+colMeans(results$logit_large,na.rm = T)
 ```
 
 

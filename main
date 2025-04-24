@@ -18,6 +18,7 @@
 \textwidth 480pt
 
 %typesetting
+\usepackage{amsmath}
 \usepackage{minted}
 \usepackage{url}
 \usepackage{hyperref}
@@ -176,11 +177,12 @@ Therefore, the purpose of this paper is to review a specific class of such measu
 
 \section{Generalized Linear Mixed Models}
 Generalized linear mixed models (GLMMs) are characterized by the inclusion of random effects across higher-level clusters, and they are designed to handle non-normal dependent variables. For simplicity, we present a two-level, fixed-slope random-intercept model, where the slopes of predictors do not vary across clusters, but cluster-specific intercepts are included [@raudenbush2002; and see @johnson2014 for $R^2$ measures for random-slope models]. When the dependent variable $y_{ij}$ follows a distribution from the exponential family, a fixed-slope random-intercept GLMM model is written as:
-$$
-h(E(y_{ij})) = \mathbf{X}_{ij}\beta + u_j
+\begin{equation}
+h(E(y_{ij})) = \mathbf{X}_{ij} \beta + u_j
 \tag{1}
 \label{eq:glmm}
-$$
+\end{equation}
+
 
 Here, the subscript $ij$ denotes the $i$th observation in the $j$th cluster. $\mathbf{X}_{ij}$ represents the predictor matrix (with the first column as 1s for the intercept), and $\beta$ denotes the fixed effects, including both intercept and slope coefficients. The random component, $u_j$, represents the cluster-specific random intercept (i.e., the deviation of the cluster-specific intercept from the overall fixed intercept). This term is also sometimes referred to as the level-2 residual, and it represents a key distinction between generalized linear models (GLMs) and GLMMs.
 
@@ -192,20 +194,20 @@ It is important to note that Equation \@ref(eq:glmm) does not explicitly include
 For GLMs, pseudo-$R^2$ measures are the most commonly reported goodness-of-fit metrics in applied research. However, none of these measures can be interpreted in the same way as the $R^2$ in linear regression models with normally distributed outcomes. Among the available options, a deviance-based measure and a likelihood-based measure are the most widely used; thus, we focus on these two here.
 
 Originally described by @cohen2002, the deviance-based measure is given by:
-$$
+\begin{equation}
 R^2_{Cohen} = \frac{D_{null} - D_{fitted}}{D_{null}}
 \tag{2}
 \label{eq:cohen}
-$$
+\end{equation}
 
 where $D_{null}$ and $D_{fitted}$ denote the deviance of the null model and the user-specified model, respectively. Equation \@ref(eq:cohen) represents the proportion of deviance reduced by the inclusion of predictors.
 
 The most commonly used likelihood-based measure is McFadden’s pseudo-$R^2$, defined as:
-$$
+\begin{equation}
 R^2_{McF} = 1 - \frac{\ln(L_{fitted})}{\ln(L_{null})}
 \tag{3}
 \label{eq:mcf}
-$$
+\end{equation}
 
 In this equation, $\ln(L_{fitted})$ and $\ln(L_{null})$ represent the log-likelihood of the fitted and null models, respectively. McFadden’s pseudo-$R^2$ is interpreted as the proportional improvement in log-likelihood achieved by including the predictors.
 
@@ -213,54 +215,54 @@ Both types of pseudo-$R^2$ can be readily extended to GLMMs, with the null model
 
 \section{Existing $R^2$ measures for LMM}
 With normally distributed outcomes, several outcome-variance-based $R^2$ measures have been proposed for linear mixed models (LMMs). Conceptually, $R^2$ is defined as:
-$$
+\begin{equation}
 R^2 = \frac{\text{model-explained variance}}{\text{total outcome variance}}
 \tag{4}
 \label{eq:r2}
-$$
+\end{equation}
 
 Alternatively, it can be expressed as:
-$$
+\begin{equation}
 R^2 = 1 - \frac{\text{residual variance}}{\text{total outcome variance}}
 \tag{5}
 \label{eq:r2resid}
-$$
+\end{equation}
 
 The definition in Equation \@ref(eq:r2) requires estimation of model-implied variances, while the definition in Equation \@ref(eq:r2resid) relies on residual variances.
 
-In LMMs, however, one important consideration is whether level-2 residuals should be treated as part of the residual variance or as part of the model-implied variance. Both approaches are reasonable, which has led to two corresponding types of $R^2$: marginal $R^2$, where level-2 residuals are treated as residual variance, and conditional $R^2$, where level-2 residuals are considered part of the model effect.[^1]
+In LMMs, however, one important consideration is whether level-2 residuals should be treated as part of the residual variance or as part of the model-implied variance. Both approaches are reasonable, which has led to two corresponding types of $R^2$: marginal $R^2$, where level-2 residuals are treated as residual variance, and conditional $R^2$, where level-2 residuals are considered part of the model effect.
 
-[^1]: For models with random slopes, if the variance attributable to the random slopes is treated as residual, the result is a marginal $R^2$; if it is treated as part of the model structure, the result is a conditional $R^2$.
+\footnote{ For models with random slopes, if the variance attributable to the random slopes is treated as residual, the result is a marginal $R^2$; if it is treated as part of the model structure, the result is a conditional $R^2$.}
 
 @raudenbush2002 proposed a variance-reduction approach for computing $R^2$ in LMMs, based on Equation \@ref(eq:r2resid):
-$$
+\begin{equation}
 R^2_{\text{R\&B}} = 1 - \frac{\sum_{j=1}^J \sum_{i=1}^{n_j} (y_{ij} - \hat{y}_{ij})^2}
 {\sum_{j=1}^J \sum_{i=1}^{n_j} (y_{ij} - \bar{y}_{ij})^2}
 \tag{6}
 \label{eq:rb}
-$$
+\end{equation}
 
 Here, $\bar{y}$ denotes the grand mean of the normally distributed outcome, $J$ is the number of clusters, and $n_j$ is the size of the $j$th cluster. The $\hat{y}_{ij}$ represents the model-predicted value for $y_{ij}$. Depending on whether $\hat{y}_{ij}$ is computed using only the fixed part of the model (i.e., $\mathbf{X}_{ij}\beta$, as in Equation \@ref(eq:glmm)), or both fixed and random parts (i.e., $\mathbf{X}_{ij}\beta + u_j$), the resulting measure corresponds to marginal or conditional $R^2$, respectively.
 
 Based on the alternative definition of $R^2$ in Equation \@ref(eq:r2), @snijders2011 proposed a total variance decomposition approach:
-$$
+\begin{equation}
 R^2_{\text{S\&B}} = 
 \frac{\gamma_X^\prime \Sigma_X \gamma_X}
 {\gamma_X^\prime \Sigma_X \gamma_X + \tau_{00} + \sigma^2}
 \tag{7}
 \label{eq:sb}
-$$
+\end{equation}
 
 Here, $\gamma_X$ is analogous to $\beta$ in Equation \@ref(eq:glmm), and $\Sigma_X$ is the covariance matrix of $\mathbf{X}_{ij}$. The term $\tau_{00}$ represents the variance of $u_j$, and $\sigma^2$ denotes the level-1 residual variance. This $R^2_{\text{S\&B}}$ can be interpreted as the proportion of total outcome variance explained by the fixed effects, including both intercept and slopes.
 
 Similarly, @nakagawa2013 proposed conditional and marginal $R^2$ measures based on the same decomposition logic:
-$$
+\begin{equation}
 R^2_{\text{Nakagawa}} = 
 \frac{\sigma_f^2 + \sigma_l^2}
 {\sigma_f^2 + \sigma_l^2 + \sigma_{\epsilon}^2}
 \tag{8}
 \label{eq:nakagawa}
-$$
+\end{equation}
 
 In this formulation, $\sigma_f^2$ represents the variance explained by the fixed effects, $\sigma_l^2$ represents the variance explained by the random effects, and $\sigma_{\epsilon}^2$ is the level-1 residual variance. This metric is interpreted as the proportion of total outcome variance explained jointly by both fixed and random effects. We will focus on this measure and discuss how it can be extended to the GLMM in subsequent sections.
 
@@ -272,7 +274,6 @@ The simulation represents an \textit{educational intervention evaluation plan} d
 
 \begin{itemize}
     \item \textbf{Individual-level variables} $\mathbf{X}_w = (X_{w1}, X_{w2})$, where $X_{w1}$ denotes \textit{Participation} and $X_{w2}$ denotes \textit{Pretest Score}.
-    \item \textbf{School-level variables} $\mathbf{X}_b = (X_{b1}, X_{b2})$, where $X_{b1}$ represents \textit{School Funding} and $X_{b2}$ represents a \textit{Resource Index}.
 \end{itemize}
 
 Each school (cluster) contains a fixed number of students. Two experimental conditions define different class size scenarios:
@@ -295,7 +296,7 @@ Did the intervention course increase the probability of students passing the fin
 
 \textbf{Corresponding Variable}: Whether the course is passed (\texttt{y = 1} passed, \texttt{y = 0} failed)
 \begin{align*}
-    \text{logit}(p_{ij}) = \beta_0 + \beta_1 X_{w1,ij} + \beta_2 X_{w2,ij} + \beta_3 X_{b1,j} + \beta_4 X_{b2,j} + u_{j}
+    \text{logit}(p_{ij}) = \beta_0 + \beta_1 X_{w1,ij} + \beta_2 X_{w2,ij}  + u_{j}
 \end{align*}
 
 where $i$ refers to the ith student and $j$ refers to the jth school.
@@ -306,7 +307,7 @@ How many Self-Study Modules do students complete during the course?
 \textbf{Corresponding Variable}: The number of completed Modules.
 
 \begin{align*}
-    \log(\lambda_{ij}) = \beta_0 + \beta_1 X_{w1,ij} + \beta_2 X_{w2,ij} + \beta_3 X_{b1,j} + \beta_4 X_{b2,j} + u_{j}
+    \log(\lambda_{ij}) = \beta_0 + \beta_1 X_{w1,ij} + \beta_2 X_{w2,ij}+ u_{j}
 \end{align*}
 
 \subsection{Zero-inflated GLMM}
@@ -314,9 +315,9 @@ How many Self-Study Modules do students complete during the course?
 We designed a zero-inflated binary data-generating mechanism in which the probability of a structural zero depends on baseline risk and two binary covariates: network quality and student health status. Specifically:
 
 \begin{itemize}
-    \item \textbf{$Z_{a1, ij}$}: continuous network quality for individual $i$ in cluster $j$.
+    \item \textbf{$Z_{a1, ij}$}: continuous network quality for individual $i$ in cluster $j$, using $N(0, 1)$ to simulate.
 
-    \item \textbf{$Z_{a2, ij}$}:  binary indicator of sick status (1 = sick, 0 = health).
+    \item \textbf{$Z_{a2, ij}$}:  binary indicator of sick status (1 = sick, 0 = health), using $Bin(0.1)$ to simulate.
     
     \item The baseline structural zero probability is set to $10\%$ for students with good network access and good health
 
